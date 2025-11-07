@@ -1,0 +1,266 @@
+/* ------------------------------------------------------------
+   layout.css
+   ------------------------------------------------------------
+   页面结构样式：顶栏、图表区、搜索框、按钮、新闻、底部
+   ------------------------------------------------------------ */
+
+/* 顶栏导航栏 */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 64px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 100;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--secondary-color);
+}
+
+/* Center the navigation links between left and right areas */
+.navbar-center {
+  flex: 1;                 /* take remaining space */
+  display: flex;
+  justify-content: center; /* center the nav links horizontally */
+}
+
+/* Ensure right-side controls keep proper vertical alignment */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Navbar left: logo image + title */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 保持与标题的间距 */
+}
+
+.nav-logo {
+  /* 放大 logo 尺寸以便在导航中更醒目 */
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+@media (max-width: 480px) {
+  .nav-logo {
+    width: 40px;
+    height: 40px;
+  }
+  .logo {
+    font-size: 1.05rem;
+  }
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  color: var(--text-color);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-links li a:hover {
+  color: var(--primary-color);
+}
+
+.lang-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.lang-btn:hover {
+  background-color: #0f5ad7;
+}
+
+/* 主内容区域 */
+.main-content {
+  padding-top: 80px; /* 留出导航高度 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.chart-section {
+  width: 90vw;
+  height: 720px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin: 0 auto;          /* ✅ 让它水平居中 */
+  position: static;        /* ✅ 不再使用 left/right hack */
+}
+
+
+/* Ensure the embedded TradingView widget can expand to the full inner width */
+.tradingview-widget-container,
+.tradingview-widget-container > iframe {
+  width: 100% !important;
+}
+
+/* Slight responsive tweak: on very small screens keep full width */
+@media (max-width: 768px) {
+  .chart-section {
+    width: 100%;
+    border-radius: 8px;
+  }
+}
+
+/* 搜索框样式 */
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+  width: 60%;            /* 按要求：搜索区宽度为父容器的 60% */
+  max-width: 900px;
+}
+
+.search-input {
+  /* 让输入框占用剩余空间，显示为圆角矩形并稍微加深背景 */
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #d7dbe0; /* 稍微深一点的边框 */
+  background-color: #f3f5f8; /* 稍微加深的背景色 */
+  font-size: 15px;
+  outline: none;
+  transition: box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.search-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-btn:hover {
+  background-color: #0f5ad7;
+}
+
+/* Focus state for input */
+.search-input:focus {
+  box-shadow: 0 4px 10px rgba(12, 80, 180, 0.08);
+  background-color: #eef2f7;
+  border-color: #c9d4ea;
+}
+
+/* Small screen: make the search form nearly full width */
+@media (max-width: 768px) {
+  .search-form {
+    width: 90%;
+  }
+  .search-input {
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+}
+
+/* 推荐股票按钮 */
+.recommend-section {
+  text-align: center;
+}
+
+.stock-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.stock-btn {
+  background-color: #fff;
+  border: 1px solid var(--light-gray);
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.stock-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+/* 新闻区（Google风格） */
+.news-section {
+  background-color: #ffffff;
+  width: 90%;
+  max-width: 1200px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+  padding: 1.8rem 2.2rem;
+  text-align: left;
+  margin: 1rem auto;
+  border-left: 4px solid #1a73e8; /* ✅ Google蓝色强调条 */
+  transition: all 0.25s ease;
+}
+
+/* 鼠标悬停效果（微动感） */
+.news-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* 新闻标题 */
+.news-section h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #202124;
+  margin-bottom: 1rem;
+}
+
+/* 新闻文字 */
+.news-section p {
+  font-size: 0.98rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+
+/* 底部区域 */
+.footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  padding: 2rem 0;
+  margin-top: 3rem;
+  border-top: 1px solid var(--light-gray);
+}

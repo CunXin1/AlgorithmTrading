@@ -1,0 +1,38 @@
+/* ------------------------------------------------------------
+   global.css
+   ------------------------------------------------------------
+   全局视觉样式：字体、背景、颜色、基础布局
+   ------------------------------------------------------------ */
+
+/* Google Fonts 导入 */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans+SC:wght@400;500&display=swap');
+
+:root {
+  --primary-color: #1a73e8;         /* Google蓝 */
+  --secondary-color: #0b132b;
+  --background-color: #f9f9fb;
+  --text-color: #202124;
+  --light-gray: #e0e0e0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--background-color);
+  font-family: 'Roboto', 'Noto Sans SC', sans-serif;
+  color: var(--text-color);
+}
+
+/* 链接样式 */
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
