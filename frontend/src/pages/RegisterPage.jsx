@@ -1,45 +1,49 @@
 import { useState } from "react";
-import { registerUser } from "../services/authService";
+import AuthCard from "../components/AuthCard";
+import { register } from "../services/authService";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleRegister() {
     try {
-      const res = await registerUser(email, password);
-      alert("Account created!");
-      console.log(res);
-    } catch (err) {
-      console.error(err);
-      alert("Register failed");
+      await register(email, password);
+      window.location.href = "/login"; // 注册成功跳转登录页
+    } catch (e) {
+      setErr("Email already exists");
     }
   }
 
   return (
-    <div className="auth-container">
-      <h2>Create Account</h2>
+    <AuthCard title="Create account" subtitle="for AlgorithmTrading">
+      <input
+        className="auth-input"
+        placeholder="Email"
+        type="email"
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      <input
+        className="auth-input"
+        placeholder="Password"
+        type="password"
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+      {err && <div style={{ color: "red", marginBottom: 10 }}>{err}</div>}
 
-        <button type="submit">Register</button>
-      </form>
-    </div>
+      <button className="auth-button" onClick={handleRegister}>
+        Create Account
+      </button>
+
+      <div
+        className="auth-link"
+        onClick={() => (window.location.href = "/login")}
+      >
+        Already have an account?
+      </div>
+    </AuthCard>
   );
 }
