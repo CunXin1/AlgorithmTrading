@@ -1,0 +1,41 @@
+# -----------------------------
+# Core Django Framework
+# -----------------------------
+Django==5.0.3
+
+# -----------------------------
+# Django REST Framework
+# -----------------------------
+djangorestframework==3.14.0
+
+# JWT Auth for DRF
+djangorestframework-simplejwt==5.3.1
+
+# -----------------------------
+# CORS handling (optional but recommended)
+# -----------------------------
+django-cors-headers==4.3.1
+
+# -----------------------------
+# HTTP Requests (Yahoo Finance)
+# -----------------------------
+requests==2.31.0
+
+# -----------------------------
+# Timezones & utilities
+# (zoneinfo is built-in for Python 3.9+)
+# Only install backport for Python 3.8 or older)
+# -----------------------------
+backports.zoneinfo; python_version < "3.9"
+
+# -----------------------------
+# Finance Data (Optional)
+# We can parse raw Yahoo Finance JSON without yfinance,
+# but if you want official Yahoo historical data:
+# -----------------------------
+yfinance==0.2.40
+
+# -----------------------------
+# Environment variable management
+# -----------------------------
+python-dotenv==1.0.1
