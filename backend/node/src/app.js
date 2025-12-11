@@ -5,16 +5,18 @@ import cors from "cors";
 
 const app = express();
 
-app.use(express.json());
-
-// Register module routes
-app.use("/api/auth", authRoutes);
-app.use("/api/stocks", stockRoutes);
-
-export default app;
-
+// ✅ CORS 必须放最前面！
 app.use(cors({
   origin: "*",
   methods: "GET,POST,PUT,DELETE",
   credentials: false
 }));
+
+// body parser
+app.use(express.json());
+
+// 注册路由
+app.use("/api/auth", authRoutes);
+app.use("/api/stocks", stockRoutes);
+
+export default app;
