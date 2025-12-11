@@ -4,21 +4,23 @@
   "main": "server.js",
   "type": "module",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^6.19.1",
+    "@prisma/config": "^7.1.0",
     "axios": "^1.13.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dayjs": "^1.11.19",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.6.1",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.0",
     "luxon": "^3.7.2",
+    "prisma": "^6.19.1",
     "yahoo-finance2": "^2.12.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
-  }
-  ,
+  },
   "prisma": {
     "schema": "src/db/prisma/schema.prisma"
   },
@@ -26,4 +28,3 @@
     "start": "node server.js"
   }
 }
-
