@@ -1,7 +1,5 @@
-// Prisma uses PostgreSQL
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  adapter = "postgresql"
 }
 
 generator client {
