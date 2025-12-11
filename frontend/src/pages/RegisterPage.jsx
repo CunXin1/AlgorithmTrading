@@ -14,7 +14,7 @@ export default function RegisterPage() {
       await register(email, password);
       window.location.href = "/login"; // 注册成功跳转登录页
     } catch (e) {
-      setErr("Email already exists");
+      setErr("Register failed: " + e.message);
     }
   }
 
