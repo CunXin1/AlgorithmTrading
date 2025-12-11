@@ -23,6 +23,8 @@ export async function register(req, res) {
   try {
     const { email, password } = req.body;
 
+    console.log("REGISTER BODY:", req.body);
+
     const result = await registerUser(email, password);
 
     res.json(result);

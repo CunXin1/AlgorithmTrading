@@ -8,6 +8,8 @@ export default function RegisterPage() {
   const [err, setErr] = useState("");
 
   async function handleRegister() {
+    console.log("EMAIL_BEFORE_SEND:", email);
+    console.log("PASSWORD_BEFORE_SEND:", password);
     try {
       await register(email, password);
       window.location.href = "/login"; // 注册成功跳转登录页
