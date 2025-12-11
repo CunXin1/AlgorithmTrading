@@ -1,12 +1,10 @@
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
-  // Prisma 7 新默认：建议用 prisma-client（而不是 prisma-client-js）
-  provider = "prisma-client"
-  // 相对 schema.prisma 的路径 => src/db/generated/prisma
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 model User {
