@@ -21,9 +21,6 @@
   "devDependencies": {
     "nodemon": "^3.1.0"
   },
-  "prisma": {
-    "schema": "src/db/prisma/schema.prisma"
-  },
   "scripts": {
     "start": "node server.js"
   }
