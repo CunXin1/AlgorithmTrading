@@ -10,7 +10,7 @@
 // ------------------------------------------------------------
 
 import express from "express";
-import { fetchIntraday } from "../services/yahooService.js"; // Import the Yahoo data service (引入Yahoo数据服务模块)
+import { fetchIntraday } from "./yahooService.js"; // Import the Yahoo data service (引入Yahoo数据服务模块)
 
 const router = express.Router(); // Create a new Express router (创建一个新的Express路由实例)
 

@@ -1,4 +1,4 @@
-import { fetchIntraday } from "../services/yahooService.js";
+import { fetchIntraday } from "./yahooService.js";
 
 export async function fetchStockData(req, res) {
   try {
