@@ -1,43 +1,52 @@
 // ------------------------------------------------------------
 // authService.js
 // ------------------------------------------------------------
-// Node backend talks to Django backend here.
-//
-// Node 后端通过此文件与 Django 通信。
 // ------------------------------------------------------------
 
-import axios from "axios";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import db from "../../db/dbClient.js";
+import dotenv from "dotenv";
 
-const DJANGO_BASE = process.env.DJANGO_URL || "https://your-django-app-url.com";
+dotenv.config();
 
-// ------------------------------------------------------------
-// Login → Django
-// ------------------------------------------------------------
-export async function loginRequest(email, password) {
-  try {
-    const res = await axios.post(`${DJANGO_BASE}/django-api/auth/login`, {
-      email,
-      password,
-    });
+export async function registerUser(email, password) {
+  const exists = await db.user.findUnique({ where: { email } });
 
-    return res.data;
-  } catch (err) {
-    throw new Error(err.response?.data?.error || "Login failed");
+  if (exists) {
+    throw new Error("User already exists");
   }
+
+  const hashed = await bcrypt.hash(password, 10);
+
+  const user = await db.user.create({
+    data: {
+      email,
+      password: hashed,
+    },
+  });
+
+  return { success: true, user: { id: user.id, email: user.email } };
 }
 
-// ------------------------------------------------------------
-// Register → Django
-// ------------------------------------------------------------
-export async function registerRequest(email, password) {
-  try {
-    const res = await axios.post(`${DJANGO_BASE}/django-api/auth/register`, {
-      email,
-      password,
-    });
+export async function loginUser(email, password) {
+  const user = await db.user.findUnique({ where: { email } });
 
-    return res.data;
-  } catch (err) {
-    throw new Error(err.response?.data?.error || "Register failed");
-  }
+  if (!user) throw new Error("User not found");
+
+  const passOK = await bcrypt.compare(password, user.password);
+
+  if (!passOK) throw new Error("Incorrect password");
+
+  const token = jwt.sign(
+    { id: user.id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return {
+    success: true,
+    token,
+    user: { id: user.id, email: user.email },
+  };
 }

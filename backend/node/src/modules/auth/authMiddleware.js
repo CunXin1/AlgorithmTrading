@@ -6,19 +6,22 @@
 // 保护需要身份验证的 API 路由。
 // ------------------------------------------------------------
 
-import { verifyToken } from "../../utils/jwtHelper.js";
+import jwt from "jsonwebtoken";
 
-export function authRequired(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-
-  if (!token)
-    return res.status(401).json({ error: "Missing authentication token" });
-
+export function requireAuth(req, res, next) {
   try {
-    const decoded = verifyToken(token);
-    req.user = decoded; // attach user info
+    const header = req.headers.authorization;
+
+    if (!header) return res.status(401).json({ error: "Missing token" });
+
+    const token = header.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = decoded;
+
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+    res.status(401).json({ error: "Invalid token" });
   }
 }

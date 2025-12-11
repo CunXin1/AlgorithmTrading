@@ -2,65 +2,32 @@
 // authController.js
 // ------------------------------------------------------------
 // Handles login & registration requests from frontend.
-// Uses authService.js (which talks to Django API).
-//
-// 处理前端的登录与注册请求，交给 authService 与 Django 通信。
 // ------------------------------------------------------------
 
-import { loginRequest, registerRequest } from "../../services/authService.js";
-import { createToken } from "../../utils/jwtHelper.js";
+import { loginUser, registerUser } from "./authService.js";
 
-// ------------------------------------------------------------
-// POST: /auth/login
-// ------------------------------------------------------------
-export async function loginUser(req, res) {
+export async function login(req, res) {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password)
-      return res.status(400).json({ error: "Missing email or password" });
+    const result = await loginUser(email, password);
 
-    // Ask Django to verify user credentials
-    const djangoUser = await loginRequest(email, password);
-
-    // Generate JWT token for frontend
-    const token = createToken({ email: djangoUser.email });
-
-    res.json({
-      success: true,
-      token,
-      user: {
-        email: djangoUser.email,
-      },
-    });
+    res.json(result);
   } catch (err) {
+    console.error("Login error:", err);
     res.status(401).json({ error: err.message });
   }
 }
 
-// ------------------------------------------------------------
-// POST: /auth/register
-// ------------------------------------------------------------
-export async function registerUser(req, res) {
+export async function register(req, res) {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password)
-      return res.status(400).json({ error: "Missing email or password" });
+    const result = await registerUser(email, password);
 
-    // ask Django to create user
-    const newUser = await registerRequest(email, password);
-
-    const token = createToken({ email: newUser.email });
-
-    res.json({
-      success: true,
-      token,
-      user: {
-        email: newUser.email,
-      },
-    });
+    res.json(result);
   } catch (err) {
+    console.error("Register error:", err);
     res.status(400).json({ error: err.message });
   }
 }
