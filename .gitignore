@@ -3,6 +3,13 @@ node_modules/
 // ignore environment variable files
 .env
 
+// pycache files
+**/__pycache__/
+
+# ignore Django migration files
+**/migrations/
+# ignore SQLite database files
+*.sqlite3
 
 
 
