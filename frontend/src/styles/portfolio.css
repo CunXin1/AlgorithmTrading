@@ -115,6 +115,18 @@
 .holding-list li span {
   color: #4b5563;
 }
+
+/* 可点击股票行 */
+.holding-item {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.holding-item:hover {
+  background: #f3f4f6;
+}
+
+
 /* 股票代码 */
 .holding-symbol {
   font-size: 1.2rem;

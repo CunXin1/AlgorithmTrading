@@ -2,51 +2,44 @@
 // Navbar.jsx
 // ------------------------------------------------------------
 // Top navigation bar for the website.
-// Includes main navigation items (Home, News, Invest, Algorithm, Login)
-// and a language toggle.
+// Includes main navigation items (Home, News, Invest, Algorithm, Portfolio)
+// and a Login button on the right.
 //
 // 网站的顶栏导航组件。
-// 包含主导航项目（首页、新闻、投资、算法、登录）以及语言切换按钮。
+// 主导航：Home / News / Invest / Algorithm / Portfolio
+// 右上角：Login
 // ------------------------------------------------------------
 
-import React, { useState } from "react";
+import React from "react";
 import "../styles/layout.css";
 
 export default function Navbar() {
-  const [language, setLanguage] = useState("EN");
-
-  // 切换中英文
-  const toggleLanguage = () => {
-    setLanguage(language === "EN" ? "中文" : "EN");
-  };
-
   return (
     <header className="navbar">
+      {/* 左侧：Logo + 标题 */}
       <div className="navbar-left">
-        {/* 网站 Logo 或标题：在标题左侧显示 assets 中的图片 */}
         <img
-          src={encodeURI('/assets/logo.png')}
+          src={encodeURI("/assets/logo.png")}
           alt="AlgorithmTrading logo"
           className="nav-logo"
         />
         <h2 className="logo">AlgorithmTrading</h2>
       </div>
 
+      {/* 中间：主导航 */}
       <nav className="navbar-center">
         <ul className="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/news">News</a></li>
           <li><a href="/invest">Invest</a></li>
           <li><a href="/algorithm">Algorithm</a></li>
-          <li><a href="/login">Login</a></li>
+          <li><a href="/portfolio">Portfolio</a></li>
         </ul>
       </nav>
 
+      {/* 右侧：Login */}
       <div className="navbar-right">
-        {/* 语言切换按钮 */}
-        <button onClick={toggleLanguage} className="lang-btn">
-          {language}
-        </button>
+        <a href="/login" className="login-btn">Login</a>
       </div>
     </header>
   );

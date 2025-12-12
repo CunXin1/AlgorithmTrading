@@ -26,4 +26,5 @@ urlpatterns = [
     # Finance API
     path("api/stocks/", include("finance.urls")),
     path("api/", include("finance.urls")),
+    path("api/news/", include("news.urls")),  # News API
 ]

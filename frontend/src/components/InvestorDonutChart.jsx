@@ -75,7 +75,7 @@ export default function InvestorDonutChart({ data, avatar }) {
           cx="50%"
           cy="50%"
           innerRadius={50}
-          outerRadius={95}
+          outerRadius={100}
           paddingAngle={2}
           startAngle={90}
           endAngle={-270}

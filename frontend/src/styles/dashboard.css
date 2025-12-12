@@ -1,0 +1,127 @@
+/* ------------------------------------------------------------
+   Dashboard Layout
+------------------------------------------------------------ */
+
+.dashboard-page {
+  padding: 2.5rem;
+  background: #f5f7fb;
+  min-height: 100vh;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  grid-gap: 1.5rem;
+}
+
+/* Card Base */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Profile */
+.profile-card {
+  text-align: center;
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  margin-bottom: 0.75rem;
+}
+
+.email {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.plan-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: #1e88e5;
+  color: white;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+/* Snapshot */
+.snapshot-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+}
+
+/* Watchlist */
+.watchlist-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.watchlist-row:hover {
+  background: #f0f4ff;
+  border-radius: 8px;
+}
+
+.symbol {
+  font-weight: 600;
+}
+
+.change {
+  text-align: right;
+}
+
+.positive {
+  color: #2e7d32;
+}
+
+.negative {
+  color: #c62828;
+}
+
+/* Portfolio */
+.portfolio-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 0.5rem 0;
+}
+
+.portfolio-name {
+  font-weight: 500;
+}
+
+/* Actions */
+.actions-card button {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: none;
+  background: #1e88e5;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.actions-card button:hover {
+  background: #1565c0;
+}
+
+/* Future */
+.muted {
+  color: #999;
+  font-size: 0.9rem;
+}

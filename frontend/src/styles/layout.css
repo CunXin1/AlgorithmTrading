@@ -1,16 +1,25 @@
 /* ------------------------------------------------------------
    layout.css
    ------------------------------------------------------------
-   页面结构样式：顶栏、图表区、搜索框、按钮、新闻、底部
+   Global layout styles:
+   - Navbar
+   - Home / Stock page main layout
+   - TradingView chart container
+   - Right sidebar (Trending / Watchlist)
+   - Search / buttons / news
+   - Footer
    ------------------------------------------------------------ */
 
-/* 顶栏导航栏 */
+/* =========================
+   Navbar
+   ========================= */
+
 .navbar {
   position: fixed;
   top: 0;
   width: 100%;
   height: 64px;
-  background-color: #fff;
+  background-color: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
@@ -19,50 +28,29 @@
   z-index: 100;
 }
 
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
 .logo {
   font-weight: 600;
   font-size: 1.3rem;
   color: var(--secondary-color);
 }
 
-/* Center the navigation links between left and right areas */
 .navbar-center {
-  flex: 1;                 /* take remaining space */
+  flex: 1;
   display: flex;
-  justify-content: center; /* center the nav links horizontally */
-}
-
-/* Ensure right-side controls keep proper vertical alignment */
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Navbar left: logo image + title */
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem; /* 保持与标题的间距 */
-}
-
-.nav-logo {
-  /* 放大 logo 尺寸以便在导航中更醒目 */
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  border-radius: 8px;
-  display: inline-block;
-}
-
-@media (max-width: 480px) {
-  .nav-logo {
-    width: 40px;
-    height: 40px;
-  }
-  .logo {
-    font-size: 1.05rem;
-  }
+  justify-content: center;
 }
 
 .nav-links {
@@ -83,115 +71,227 @@
   color: var(--primary-color);
 }
 
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .lang-btn {
   background-color: var(--primary-color);
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 6px;
   padding: 6px 10px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.2s;
 }
 
 .lang-btn:hover {
   background-color: #0f5ad7;
 }
 
-/* 主内容区域 */
-.main-content {
-  padding-top: 80px; /* 留出导航高度 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
+/* =========================
+   Main page container
+   ========================= */
+
+.homepage {
+  padding-top: 80px; /* navbar offset */
 }
+
+/* =========================
+   Home / Stock main layout
+   ========================= */
+
+.home-layout,
+.stock-layout {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* 左侧主区域留白（5~8%） */
+.home-left,
+.stock-left {
+  padding-left: 6%;
+}
+
+/* =========================
+   TradingView Chart Card
+   ========================= */
 
 .chart-section {
-  width: 90vw;
-  height: 720px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.home-chart-shell,
+.stock-chart-shell {
+  height: 600px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
   overflow: hidden;
-  margin: 0 auto;          /* ✅ 让它水平居中 */
-  position: static;        /* ✅ 不再使用 left/right hack */
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
 }
 
-
-/* Ensure the embedded TradingView widget can expand to the full inner width */
+/* TradingView iframe 自适应 */
 .tradingview-widget-container,
-.tradingview-widget-container > iframe {
+.tradingview-widget-container iframe,
+.tv-container {
   width: 100% !important;
+  height: 100% !important;
 }
 
-/* Slight responsive tweak: on very small screens keep full width */
-@media (max-width: 768px) {
-  .chart-section {
-    width: 100%;
-    border-radius: 8px;
-  }
+/* =========================
+   Right Sidebar (Reusable)
+   ========================= */
+
+.right-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-/* 搜索框样式 */
+.sidebar-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.sidebar-header {
+  margin-bottom: 0.75rem;
+}
+
+.sidebar-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sidebar-link {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.55rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  text-align: left;
+}
+
+.sidebar-link:hover {
+  background: #f3f4f6;
+}
+
+.sidebar-action {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  background: #eef2ff;
+}
+
+.sidebar-action:hover {
+  background: #e0e7ff;
+}
+
+.sidebar-action.remove {
+  background: #f3f4f6;
+}
+
+.sidebar-action.remove:hover {
+  background: #e5e7eb;
+}
+
+.sidebar-empty {
+  padding: 0.75rem 0.25rem;
+  color: #6b7280;
+}
+
+.sidebar-empty-title {
+  font-weight: 700;
+}
+
+.sidebar-empty-subtitle {
+  font-size: 0.85rem;
+}
+
+/* =========================
+   Search section
+   ========================= */
+
 .search-section {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin: 1.25rem 0;
 }
 
 .search-form {
   display: flex;
   gap: 10px;
-  width: 60%;            /* 按要求：搜索区宽度为父容器的 60% */
+  width: 60%;
   max-width: 900px;
 }
 
 .search-input {
-  /* 让输入框占用剩余空间，显示为圆角矩形并稍微加深背景 */
   flex: 1;
   padding: 12px 16px;
   border-radius: 12px;
-  border: 1px solid #d7dbe0; /* 稍微深一点的边框 */
-  background-color: #f3f5f8; /* 稍微加深的背景色 */
+  border: 1px solid #d7dbe0;
+  background-color: #f3f5f8;
   font-size: 15px;
   outline: none;
-  transition: box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.search-input:focus {
+  background-color: #eef2f7;
+  border-color: #c9d4ea;
 }
 
 .search-btn {
   background-color: var(--primary-color);
-  color: white;
+  color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 10px 16px;
   cursor: pointer;
-  transition: background-color 0.2s;
+}
+
+.search-btn.secondary {
+  background: #eef2ff;
+  color: #3730a3;
 }
 
 .search-btn:hover {
   background-color: #0f5ad7;
 }
 
-/* Focus state for input */
-.search-input:focus {
-  box-shadow: 0 4px 10px rgba(12, 80, 180, 0.08);
-  background-color: #eef2f7;
-  border-color: #c9d4ea;
-}
+/* =========================
+   Recommended stocks
+   ========================= */
 
-/* Small screen: make the search form nearly full width */
-@media (max-width: 768px) {
-  .search-form {
-    width: 90%;
-  }
-  .search-input {
-    border-radius: 10px;
-    padding: 10px 12px;
-  }
-}
-
-/* 推荐股票按钮 */
 .recommend-section {
   text-align: center;
 }
@@ -201,25 +301,27 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-top: 0.5rem;
 }
 
 .stock-btn {
-  background-color: #fff;
+  background-color: #ffffff;
   border: 1px solid var(--light-gray);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 8px 16px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s ease;
 }
 
 .stock-btn:hover {
   background-color: var(--primary-color);
-  color: white;
+  color: #ffffff;
   border-color: var(--primary-color);
 }
-/* 新闻区（Google风格） */
+
+/* =========================
+   News section
+   ========================= */
+
 .news-section {
   background-color: #ffffff;
   width: 90%;
@@ -227,35 +329,26 @@
   border-radius: 12px;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
   padding: 1.8rem 2.2rem;
-  text-align: left;
-  margin: 1rem auto;
-  border-left: 4px solid #1a73e8; /* ✅ Google蓝色强调条 */
-  transition: all 0.25s ease;
+  margin: 1.5rem auto;
+  border-left: 4px solid #1a73e8;
 }
 
-/* 鼠标悬停效果（微动感） */
-.news-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
-}
-
-/* 新闻标题 */
-.news-section h2 {
+.news-section h3 {
   font-size: 1.3rem;
   font-weight: 600;
   color: #202124;
-  margin-bottom: 1rem;
 }
 
-/* 新闻文字 */
 .news-section p {
   font-size: 0.98rem;
   color: #444;
   line-height: 1.6;
 }
 
+/* =========================
+   Footer
+   ========================= */
 
-/* 底部区域 */
 .footer {
   text-align: center;
   font-size: 0.9rem;
@@ -263,4 +356,30 @@
   padding: 2rem 0;
   margin-top: 3rem;
   border-top: 1px solid var(--light-gray);
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 980px) {
+  .home-layout,
+  .stock-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .home-left,
+  .stock-left {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-logo {
+    width: 40px;
+    height: 40px;
+  }
+  .logo {
+    font-size: 1.05rem;
+  }
 }

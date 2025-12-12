@@ -63,13 +63,17 @@ export default function PortfolioPage() {
           />
           <ul className="holding-list">
             {buffettData.map((i) => (
-              <li key={i.name}>
-  <span className="holding-symbol">{i.name}</span>
-  <span className="holding-value">{i.value.toFixed(2)}%</span>
-</li>
+    <li
+      key={i.name}
+      className="holding-item"
+      onClick={() => navigate(`/stock/${i.name.toLowerCase()}`)}
+    >
+      <span className="holding-symbol">{i.name}</span>
+      <span className="holding-value">{i.value.toFixed(2)}%</span>
+    </li>
+  ))}
+</ul>
 
-            ))}
-          </ul>
         </div>
 
         {/* Pelosi */}
@@ -85,7 +89,11 @@ export default function PortfolioPage() {
           />
           <ul className="holding-list">
             {pelosiData.map((i) => (
-              <li key={i.name}>
+              <li
+      key={i.name}
+      className="holding-item"
+      onClick={() => navigate(`/stock/${i.name.toLowerCase()}`)}
+    >
   <span className="holding-symbol">{i.name}</span>
   <span className="holding-value">{i.value.toFixed(2)}%</span>
 </li>
@@ -107,7 +115,11 @@ export default function PortfolioPage() {
           />
           <ul className="holding-list">
             {woodData.map((i) => (
-              <li key={i.name}>
+             <li
+      key={i.name}
+      className="holding-item"
+      onClick={() => navigate(`/stock/${i.name.toLowerCase()}`)}
+    >
   <span className="holding-symbol">{i.name}</span>
   <span className="holding-value">{i.value.toFixed(2)}%</span>
 </li>
