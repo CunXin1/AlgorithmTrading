@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python cache
+__pycache__/
+*.pyc
+
+
+# Django sqlite DB（如果你不想提交）
+*.sqlite3
+
+# Venv
+venv/
+.env
+
+# Node
+node_modules/
+dist/
