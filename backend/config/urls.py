@@ -18,7 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/auth/', include('authapi.urls')),
-    path('api/stocks/', include('finance.urls')),
+    path("admin/", admin.site.urls),
+
+    # Auth API
+    path("api/auth/", include("authapi.urls")),
+
+    # Finance API
+    path("api/stocks/", include("finance.urls")),
+    path("api/", include("finance.urls")),
 ]

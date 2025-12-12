@@ -69,3 +69,21 @@ def http_get(
 
     # 所有重试失败
     raise RuntimeError(f"HTTP request failed: {last_err}")
+
+def http_get1(url, params=None):
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json",
+        "Connection": "keep-alive",
+    }
+
+    # Yahoo 不允许出现 param "_"
+    if params and "_" in params:
+        params.pop("_")
+
+    resp = requests.get(url, params=params, headers=headers, timeout=10)
+
+    if resp.status_code != 200:
+        raise RuntimeError(f"HTTP request failed: {resp.status_code} {resp.text}")
+
+    return resp.json()

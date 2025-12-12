@@ -8,6 +8,7 @@ from typing import Any, Dict
 
 from django.http import JsonResponse, HttpRequest
 from .services import fetch_intraday
+from .price_service import get_current_price
 
 
 def stock_intraday_view(request: HttpRequest, symbol: str) -> JsonResponse:
@@ -38,3 +39,8 @@ def stock_intraday_view(request: HttpRequest, symbol: str) -> JsonResponse:
             status=500,
             json_dumps_params={"ensure_ascii": False},
         )
+
+
+def current_price_view(request, symbol: str):
+    data = get_current_price(symbol)
+    return JsonResponse(data, safe=True)
