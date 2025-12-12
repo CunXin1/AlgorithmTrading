@@ -1,0 +1,176 @@
+/* ============================================================
+   Portfolio Page (Isolated Styles)
+   不影响 layout.css
+   ============================================================ */
+
+/* 页面整体宽度控制（不占满屏幕） */
+.portfolio-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+/* 标题 */
+.portfolio-page h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.portfolio-page .subtitle {
+  color: #6b7280;
+  margin-bottom: 1.8rem;
+}
+
+/* 三列卡片布局 */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 25vw));
+  gap: 1.75rem;
+  justify-content: center; /* 让 3 个卡片整体居中 */
+}
+
+
+/* 单张卡片 */
+.portfolio-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.portfolio-card h3 {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont;
+  font-size: 1.8rem;     /* 原来一般 ~1rem */
+  font-weight: 700;       /* 明显比现在高级 */
+  margin-bottom: 0.5rem;
+}
+.ytd-return {
+  font-size: 1.2rem;
+  color: #2a990e; /* 灰一点 */
+  margin-bottom: 0.25rem;
+
+    text-align: right;
+
+    font-weight: 600;
+}
+/* ============================================================
+   Donut Chart
+   ============================================================ */
+
+/* Donut 外层容器 */
+.donut-wrapper {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto 0.75rem;
+}
+
+/* 中心头像：⚠️ 关键：与 innerRadius 几乎贴合 */
+.donut-avatar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;              /* 比之前稍大 */
+  height: 100px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid #ffffff; /* 非厚边框，避免空隙感 */
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  background: #fff;
+  pointer-events: none;     /* 不挡 tooltip */
+}
+
+/* Tooltip（外圈显示） */
+.donut-tooltip {
+  background: #ffffff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Holding List
+   ============================================================ */
+
+.holding-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+}
+
+.holding-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  padding: 3px 6px;
+  border-radius: 6px;
+  color: #111827;
+
+}
+
+.holding-list li span {
+  color: #4b5563;
+}
+/* 股票代码 */
+.holding-symbol {
+  font-size: 1.2rem;
+  font-weight: 800;     /* 加粗，但不炸 */
+  color: #050608;       /* 主文字色 */
+}
+
+/* 百分比 */
+.holding-value {
+  font-size: 1rem;   /* 稍微大一点 */
+  font-weight: 500;
+  color: #4b5563;       /* 次级文字 */
+}
+
+
+
+/* ============================================================
+   Your Portfolio Section
+   ============================================================ */
+
+.your-portfolio {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.your-portfolio p {
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.primary-btn {
+  margin-top: 1rem;
+  background: #4f46e5;
+  color: #ffffff;
+  padding: 0.55rem 1.3rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: #4338ca;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 200px) {
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .donut-wrapper {
+    margin-bottom: 1rem;
+  }
+}

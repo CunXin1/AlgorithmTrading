@@ -13,6 +13,8 @@ import HomePage from "./pages/HomePage.jsx";
 
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
+import PortfolioPage from "./pages/PortfolioPage";
+import MyPortfolioPage from "./pages/MyPortfolioPage"; 
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -35,6 +37,13 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+
+            {/* 名人投资组合页 */}
+            <Route path="/portfolio" element={<PortfolioPage />} />
+
+            {/* 用户自建投资组合页 */}
+            <Route path="/myportfolio" element={<MyPortfolioPage />} />
+
           </Routes>
         </main>
       </div>
