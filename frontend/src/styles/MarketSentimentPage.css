@@ -1,0 +1,298 @@
+/* ========================= Base Page ========================= */
+.ms-page {
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 0 28px 28px;
+  font-family: Roboto, Arial, sans-serif;
+  color: #202124;
+}
+
+/* NavBar spacer */
+.ms-navbar-spacer {
+  height: 80px;
+}
+
+/* ========================= Header ========================= */
+.ms-header {
+  margin: 8px auto 18px;
+  width: 80%;
+}
+
+.ms-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.ms-subtitle {
+  margin-top: 8px;
+  font-size: 18px;
+  color: #5f6368;
+}
+
+/* ========================= Error ========================= */
+.ms-error-card {
+  width: 80%;
+  margin: 12px auto;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #fad2cf;
+  padding: 14px 16px;
+}
+
+.ms-error-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c5221f;
+}
+
+.ms-error-msg {
+  font-size: 12.5px;
+  color: #3c4043;
+}
+
+/* ========================= Cards ========================= */
+.ms-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.15),
+              0 2px 6px rgba(60, 64, 67, 0.08);
+}
+
+/* ========================= TOP SECTION (F&G) ========================= */
+.ms-top-row {
+  display: flex;
+  flex-direction: column;     /* ✅ 关键修改：纵向 */
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+/* Main F&G card */
+.ms-card-large {
+  width: 80%;
+  padding: 24px;
+}
+
+.ms-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.ms-card-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.ms-card-desc {
+  font-size: 15px;
+  color: #5f6368;
+  max-width: 700px;
+}
+
+/* ========================= F&G VALUE BOX ========================= */
+.ms-current-box {
+  min-width: 180px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid #e6e8eb;
+  background: #eef3fd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ms-current-value {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ms-current-sentiment {
+  margin-top: 2px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.ms-current-text {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+/* ========================= Range Selector ========================= */
+.ms-range {
+  display: flex;
+  gap: 10px;
+  margin: 16px 0 14px;
+}
+
+.ms-chip {
+  border: none;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.ms-chip.active {
+  background: #1a73e8;
+  color: #fff;
+}
+
+/* ========================= Chart Wrapper ========================= */
+.ms-chart-wrap {
+  margin-top: 10px;
+}
+
+/* ========================= SUB INDICATORS GRID ========================= */
+.ms-grid-3 {
+  width: 80%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 45% 45%;
+  column-gap: 8%;
+  row-gap: 22px;
+  justify-content: center;
+}
+
+/* ========================= Small Cards ========================= */
+.ms-card-small {
+  padding: 24px;
+}
+
+.ms-small-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.ms-small-title {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.ms-small-right {
+  text-align: right;
+}
+
+.ms-small-score {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.ms-small-chart {
+  margin-top: 6px;
+}
+
+.ms-small-foot {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #5f6368;
+}
+
+/* ========================= Badges ========================= */
+.ms-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.badge-neutral { background: #f1f3f4; color: #3c4043; }
+.badge-fear { background: #e8f0fe; color: #1a73e8; }
+.badge-extreme-fear { background: #d2e3fc; color: #174ea6; }
+.badge-greed { background: #e6f4ea; color: #137333; }
+.badge-extreme-greed { background: #ceead6; color: #0d652d; }
+
+/* ========================= Alert Box ========================= */
+.ms-alert-box {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #e6e8eb;
+}
+
+.ms-alert-title {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.ms-alert-desc {
+  font-size: 18px;
+  color: #5f6368;
+  margin-bottom: 10px;
+}
+
+.ms-alert-form {
+  display: flex;
+  gap: 10px;
+}
+
+.ms-alert-input {
+  flex: 1;
+  padding: 10px 10px;
+  border-radius: 8px;
+  border: 1px solid #dadce0;
+  font-size: 16px;
+}
+
+.ms-alert-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  background: #1a73e8;
+  color: white;
+}
+
+.ms-alert-btn.off {
+  background: #1a73e8;
+}
+
+.ms-alert-btn.on {
+  background: #5f6368;
+}
+
+.ms-alert-btn:hover {
+  opacity: 0.9;
+}
+
+.ms-alert-btn:active {
+  transform: scale(0.97);
+}
+
+
+
+/* ========================= Source ========================= */
+.ms-source {
+  width: 80%;
+  margin: 18px auto 0;
+  font-size: 12px;
+  color: #5f6368;
+}
+
+/* ========================= Responsive ========================= */
+@media (max-width: 900px) {
+  .ms-card-large,
+  .ms-grid-3,
+  .ms-header,
+  .ms-source {
+    width: 95%;
+  }
+
+  .ms-grid-3 {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+  }
+}
