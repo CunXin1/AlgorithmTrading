@@ -33,6 +33,7 @@ export default function Navbar() {
           <li><a href="/news">News</a></li>
           <li><a href="/marketsentiment">Market Sentiment</a></li>
           <li><a href="/portfolio">Portfolio</a></li>
+          <li><a href="/dashboard">My Dashboard</a></li>
         </ul>
       </nav>
 
