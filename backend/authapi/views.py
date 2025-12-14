@@ -1,6 +1,7 @@
 # authapi/views.py
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -14,10 +15,8 @@ from django.utils.crypto import get_random_string
 from django.core.mail import send_mail
 
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET
 from django.http import JsonResponse
-from django.contrib.auth import logout
-
 
 
 @api_view(["POST"])
@@ -30,12 +29,8 @@ def register_view(request):
     password = serializer.validated_data["password"]
     code = serializer.validated_data["code"]
 
-    try:
-        record = EmailVerificationCode.objects.filter(
-            email=email, code=code
-        ).first()
-    except EmailVerificationCode.DoesNotExist:
-        record = None
+    # 你这里用了 .first()，不会抛 DoesNotExist，所以不需要 try/except
+    record = EmailVerificationCode.objects.filter(email=email, code=code).first()
 
     if not record or record.is_expired():
         return Response(
@@ -65,21 +60,21 @@ def login_view(request):
     password = serializer.validated_data["password"]
 
     try:
-        user = User.objects.get(email=email)
+        u = User.objects.get(email=email)
     except User.DoesNotExist:
         return Response(
             {"error": "User not found"},
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
-    user = authenticate(request, username=user.username, password=password)
+    user = authenticate(request, username=u.username, password=password)
     if not user:
         return Response(
             {"error": "Incorrect password"},
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
-    login(request, user)  # ⭐ 登录成功
+    login(request, user)  # ⭐ 登录成功（sessionid）
 
     return Response({"ok": True})
 
@@ -105,11 +100,11 @@ def send_verification_code(request):
         code=code,
     )
 
-    # ⚠️ 这里假设你已经配置好 Django email backend
+    # 用 settings.DEFAULT_FROM_EMAIL 更稳（你配置好了 Gmail 以后这里就会正确发件）
     send_mail(
         subject="Your AlgorithmTrading verification code",
         message=f"Your verification code is: {code}",
-        from_email=None,  # settings.DEFAULT_FROM_EMAIL
+        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
         recipient_list=[email],
         fail_silently=False,
     )
@@ -125,8 +120,10 @@ def me_view(request):
     返回当前已登录用户信息（基于 session）
     """
     user = request.user
-    return JsonResponse({
-        "id": user.id,
-        "email": user.email,
-        "username": user.username,
-    })
+    return JsonResponse(
+        {
+            "id": user.id,
+            "email": user.email,
+            "username": user.username,
+        }
+    )

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWatchlist } from "../../context/WatchlistContext";
 
+
 export default function WatchlistCard() {
   const navigate = useNavigate();
   const { watchlist, add, remove } = useWatchlist();
@@ -20,18 +21,12 @@ export default function WatchlistCard() {
 
   return (
     <div className="dash-card">
+      {/* Header */}
       <div className="dash-card-header">
         <h3 className="dash-card-title">My Watchlist</h3>
-        <button
-          className="dash-btn"
-          type="button"
-          onClick={() => navigate("/news")}
-          title="Open News"
-        >
-          News
-        </button>
       </div>
 
+      {/* Add input */}
       <div className="watchlist-add">
         <input
           className="dash-input"
@@ -39,11 +34,16 @@ export default function WatchlistCard() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Add symbol (e.g. AAPL)"
         />
-        <button className="dash-btn primary" type="button" onClick={handleAdd}>
-          + Add
+        <button
+          className="dash-btn primary"
+          type="button"
+          onClick={handleAdd}
+        >
+          Add
         </button>
       </div>
 
+      {/* List */}
       {watchlist.length === 0 ? (
         <div className="dash-empty">
           Empty. Add a symbol to start tracking.

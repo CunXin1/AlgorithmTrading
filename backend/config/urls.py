@@ -31,7 +31,12 @@ urlpatterns = [
     path("api/news/", include("news.urls")),  # News API
     path("api/sentiment/", include("market_sentiment.urls")),  # Market Sentiment API
     path("api/core/", include("core.urls")),  # Core API
+    path("api/auth/", include("authapi.urls")),  # Auth API
+    path("admin/", admin.site.urls),  # Admin panel
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

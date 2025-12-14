@@ -60,8 +60,6 @@ INSTALLED_APPS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
-
 # -------------------------------------------------------------
 # MIDDLEWARE (CORS MUST BE FIRST)
 # -------------------------------------------------------------
@@ -154,7 +152,15 @@ SIMPLE_JWT = {
 # -------------------------------------------------------------
 # CORS SETTINGS (Fix your CORS error)
 # -------------------------------------------------------------
-CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 # ========================
 # Email (SMTP - Gmail)

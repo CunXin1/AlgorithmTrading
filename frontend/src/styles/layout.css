@@ -383,3 +383,33 @@
     font-size: 1.05rem;
   }
 }
+
+/* =========================================================
+   Buttons – Unified Google Blue
+   ========================================================= */
+
+/* Login / Logout button (Navbar) */
+.login-btn {
+  appearance: none;
+  border: none;
+  background: #1a73e8;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 999px; /* Google 风格 */
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none; /* 对 <a> */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.login-btn:hover {
+  background: #1669c1;
+}
+
+.login-btn:active {
+  background: #1558a6;
+}

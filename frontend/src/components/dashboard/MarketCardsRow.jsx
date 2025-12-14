@@ -117,7 +117,14 @@ function MinuteChart({ data }) {
         hoverIdx !== null ? data[hoverIdx].time.slice(11, 16) : null;
 
     return (
-        <div style={{ position: "relative" }}>
+        <div
+            style={{
+                position: "relative",
+                width: "100%",
+                overflow: "hidden",
+                minWidth: 0,          // ✅ 就这一行（必须）
+            }}
+        >
             <svg
                 viewBox={`0 0 ${width} ${height}`}
                 preserveAspectRatio="none"
@@ -131,33 +138,65 @@ function MinuteChart({ data }) {
                         y: e.clientY - rect.top,
                     });
                 }}
-
                 onMouseLeave={() => setHoverIdx(null)}
             >
                 {/* Axes */}
-                <line x1={padLeft} y1={padTop} x2={padLeft} y2={height - padBottom} stroke="#e5e7eb" />
-                <line x1={padLeft} y1={height - padBottom} x2={width - padRight} y2={height - padBottom} stroke="#e5e7eb" />
+                <line
+                    x1={padLeft}
+                    y1={padTop}
+                    x2={padLeft}
+                    y2={height - padBottom}
+                    stroke="#e5e7eb"
+                />
+                <line
+                    x1={padLeft}
+                    y1={height - padBottom}
+                    x2={width - padRight}
+                    y2={height - padBottom}
+                    stroke="#e5e7eb"
+                />
 
                 {/* Y axis */}
                 {yTicks.map((p, i) => (
                     <g key={i}>
-                        <line x1={padLeft - 4} y1={yOf(p)} x2={padLeft} y2={yOf(p)} stroke="#e5e7eb" />
-                        <text x={padLeft - 6} y={yOf(p) + 4} fontSize="10" fill="#6b7280" textAnchor="end">
+                        <line
+                            x1={padLeft - 4}
+                            y1={yOf(p)}
+                            x2={padLeft}
+                            y2={yOf(p)}
+                            stroke="#e5e7eb"
+                        />
+                        <text
+                            x={padLeft - 6}
+                            y={yOf(p) + 4}
+                            fontSize="10"
+                            fill="#6b7280"
+                            textAnchor="end"
+                        >
                             ${p.toFixed(2)}
                         </text>
                     </g>
                 ))}
 
                 {/* X axis */}
-                {xTicks.map(t => (
-                    <text key={t.label} x={xOf(t.idx)} y={height - 8} fontSize="10" fill="#6b7280" textAnchor="middle">
+                {xTicks.map((t) => (
+                    <text
+                        key={t.label}
+                        x={xOf(t.idx)}
+                        y={height - 8}
+                        fontSize="10"
+                        fill="#6b7280"
+                        textAnchor="middle"
+                    >
                         {t.label}
                     </text>
                 ))}
 
                 {/* Price */}
                 <polyline
-                    points={closes.map((p, i) => `${xOf(i)},${yOf(p)}`).join(" ")}
+                    points={closes
+                        .map((p, i) => `${xOf(i)},${yOf(p)}`)
+                        .join(" ")}
                     fill="none"
                     stroke="#1a73e8"
                     strokeWidth="2"
@@ -165,7 +204,9 @@ function MinuteChart({ data }) {
 
                 {/* VWAP */}
                 <polyline
-                    points={vwapSeries.map((p, i) => `${xOf(i)},${yOf(p)}`).join(" ")}
+                    points={vwapSeries
+                        .map((p, i) => `${xOf(i)},${yOf(p)}`)
+                        .join(" ")}
                     fill="none"
                     stroke="#f59e0b"
                     strokeWidth="1.5"
@@ -183,8 +224,18 @@ function MinuteChart({ data }) {
                             stroke="#9ca3af"
                             strokeDasharray="3 3"
                         />
-                        <circle cx={xOf(hoverIdx)} cy={yOf(closes[hoverIdx])} r="3" fill="#1a73e8" />
-                        <circle cx={xOf(hoverIdx)} cy={yOf(vwapSeries[hoverIdx])} r="3" fill="#f59e0b" />
+                        <circle
+                            cx={xOf(hoverIdx)}
+                            cy={yOf(closes[hoverIdx])}
+                            r="3"
+                            fill="#1a73e8"
+                        />
+                        <circle
+                            cx={xOf(hoverIdx)}
+                            cy={yOf(vwapSeries[hoverIdx])}
+                            r="3"
+                            fill="#f59e0b"
+                        />
                     </>
                 )}
             </svg>
@@ -195,7 +246,6 @@ function MinuteChart({ data }) {
                         position: "absolute",
                         left: mousePos.x + 12,
                         top: mousePos.y + 12,
-
                         background: "white",
                         border: "1px solid #e5e7eb",
                         borderRadius: "8px",
@@ -212,7 +262,6 @@ function MinuteChart({ data }) {
                     <div style={{ whiteSpace: "nowrap" }}>
                         VWAP: ${vwapSeries[hoverIdx].toFixed(2)}
                     </div>
-
                 </div>
             )}
         </div>
@@ -242,7 +291,7 @@ function MarketCard({ symbol, name }) {
     const pct = first && last ? ((last - first) / first) * 100 : 0;
 
     return (
-        <div className="market-card" style={{ width: "46%", height: "300px", padding: "16px" }}>
+        <div className="market-card">
             <div className="market-card-top">
                 <div>
                     <div className="market-symbol clickable" onClick={() => navigate(`/stock/${symbol.toLowerCase()}`)}>
@@ -271,7 +320,8 @@ function MarketCard({ symbol, name }) {
    ========================= */
 export default function MarketCardsRow() {
     return (
-        <div className="market-row" style={{ display: "flex", gap: "2%", justifyContent: "center" }}>
+        <div className="market-row">
+
             <MarketCard symbol="QQQ" name="Invesco QQQ" />
             <MarketCard symbol="SPY" name="SPDR S&P 500" />
         </div>

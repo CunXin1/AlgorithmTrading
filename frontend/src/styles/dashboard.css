@@ -1,168 +1,176 @@
+/* =========================================================
+   Dashboard – Base Layout
+   ========================================================= */
+
 .dashboard-page {
   min-height: 100vh;
-  padding: 90px 0 40px;
+  padding-top: 100px;            /* 给 navbar 让位 */
+  background: #f3f4f6;          /* Google 风格浅灰背景 */
 }
 
 .dashboard-container {
-  width: min(1200px, 92vw);
-  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-/* Top grid: profile/watchlist/email/portfolio */
-.dashboard-top-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 22px;
+.dashboard-top-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+.dashboard-row {
+  width: 80%;
+  max-width: 1200px;
+  margin-bottom: 24px;
 }
 
-@media (max-width: 980px) {
-  .dashboard-top-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
-.dashboard-section {
-  margin-top: 18px;
-}
 
-.dashboard-section-title {
-  margin: 12px 0 10px;
-  font-size: 18px;
-}
 
-/* Generic card */
+/* =========================================================
+   Shared Card Style (Google UI)
+   ========================================================= */
+
 .dash-card {
-  background: white;
-  border-radius: 14px;
+  background: #ffffff;
+  border-radius: 16px;
   border: 1px solid #e5e7eb;
-  padding: 14px 14px 12px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
+/* Card header */
 .dash-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .dash-card-title {
   font-size: 16px;
-  margin: 0;
+  font-weight: 700;
+  color: #111827;
 }
 
-.dash-btn-row {
-  display: flex;
-  gap: 8px;
-}
+/* =========================================================
+   Buttons – Unified Google Blue
+   ========================================================= */
 
 .dash-btn {
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  border-radius: 10px;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.dash-btn.primary {
+  border: none;
   background: #2563eb;
-  border-color: #2563eb;
-  color: white;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.dash-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.dash-btn:hover {
+  background: #1d4ed8;
 }
 
-.dash-badge {
-  font-size: 12px;
-  color: #6b7280;
-  background: #f3f4f6;
-  padding: 6px 8px;
-  border-radius: 999px;
-  max-width: 62%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.dash-btn.secondary {
+  background: #e5e7eb;
+  color: #111827;
 }
 
-.dash-hint {
-  font-size: 12px;
-  color: #6b7280;
+.dash-btn.secondary:hover {
+  background: #d1d5db;
 }
 
+/* Inputs */
 .dash-input {
   width: 100%;
   border: 1px solid #d1d5db;
   border-radius: 10px;
   padding: 10px 12px;
-  background: #f9fafb;
+  font-size: 14px;
   outline: none;
-}
-
-.dash-label {
-  display: block;
-  font-size: 12px;
-  color: #6b7280;
-  margin-bottom: 10px;
-}
-
-.dash-empty {
-  color: #6b7280;
   background: #f9fafb;
-  border: 1px dashed #e5e7eb;
-  border-radius: 12px;
-  padding: 14px;
 }
+
+.dash-input:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+}
+
+/* =========================================================
+   Row Layouts (1)(2) – Two Cards, 80% Width, 4% Gap
+   ========================================================= */
+
+.dashboard-top-row,
+.dashboard-second-row {
+  width: 80%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2%;
+  max-width: 1200px;
+}
+
+@media (max-width: 980px) {
+  .dashboard-top-row,
+  .dashboard-second-row {
+    width: 92%;
+    grid-template-columns: 1fr;
+    row-gap: 16px;
+  }
+}
+
+/* =========================================================
+   Profile + Watchlist Internal Styling
+   ========================================================= */
 
 /* Profile */
 .profile-body {
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  align-items: center;
+  gap: 16px;
 }
 
 .profile-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 16px;
-  object-fit: cover;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
   border: 1px solid #e5e7eb;
+  object-fit: cover;
   background: #f3f4f6;
 }
 
 .profile-name {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
+  color: #111827;
 }
 
 .profile-sub {
-  font-size: 12px;
+  font-size: 13px;
   color: #6b7280;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
-.profile-edit {
-  display: grid;
+/* Watchlist */
+.watchlist-add {
+  display: flex;
   gap: 10px;
+  margin-bottom: 14px;
 }
 
-/* Lists */
 .dash-list {
   list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 
 .dash-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 10px 4px;
+  padding: 8px 0;
   border-bottom: 1px solid #f3f4f6;
 }
 
@@ -170,75 +178,86 @@
   border-bottom: none;
 }
 
-.dash-row-left {
-  display: grid;
-  gap: 2px;
-}
-
-.dash-row-title {
-  font-weight: 600;
-}
-
-.dash-row-sub {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.dash-row-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
 .dash-link {
-  border: none;
   background: none;
+  border: none;
+  font-weight: 700;
   color: #111827;
   cursor: pointer;
-  font-weight: 600;
-  text-align: left;
+}
+
+.dash-link:hover {
+  color: #2563eb;
 }
 
 .dash-x {
+  background: none;
   border: none;
-  background: transparent;
-  cursor: pointer;
   font-size: 18px;
   color: #9ca3af;
-}
-
-.watchlist-add {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-/* Toggle */
-.dash-toggle {
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  padding: 6px 10px;
   cursor: pointer;
-  background: #f9fafb;
-  font-weight: 600;
 }
 
-.dash-toggle.on {
-  background: #dcfce7;
-  border-color: #86efac;
+.dash-x:hover {
+  color: #dc2626;
 }
 
-.dash-toggle.off {
-  background: #fee2e2;
-  border-color: #fecaca;
+/* =========================================================
+    (2) Watchlist – Fixed Height with Scrollbar
+    ========================================================= */
+
+
+/* Watchlist 外层容器 */
+.dashboard-top-row .watchlist {
+  height: 260px;              /* 你可以改 240 / 280 */
+}
+.dashboard-top-row .watchlist .dash-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.dashboard-top-row .watchlist .dash-list {
+  flex: 1;                    /* 吃掉剩余空间 */
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.dashboard-top-row .watchlist .dash-empty {
+  flex: 1;
+}
+.dashboard-top-row .watchlist .dash-list::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* Market cards row */
-.market-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.dashboard-top-row .watchlist .dash-list::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
 }
+
+.dashboard-top-row .watchlist .dash-list::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+
+
+/* =========================================================
+   (3) Market Snapshot – Based on Your Existing CSS
+   ========================================================= */
+
+
+.dashboard-third-row {
+  width: 80%;
+  max-width: 1200px;
+}
+
+
+.dashboard-section-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #111827;
+}
+
+
 
 @media (max-width: 980px) {
   .market-row {
@@ -246,88 +265,119 @@
   }
 }
 
-.market-card {
-  text-align: left;
-  width: 100%;
-  border: 1px solid #e5e7eb;
-  background: white;
-  border-radius: 14px;
-  padding: 12px 12px 10px;
-  min-height: 300px;
+
+
+.market-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 
+
+
+.market-card {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  min-height: 300px;
+  min-width: 0;
+}
+
+/* Header */
 .market-card-top {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-}
-.market-symbol.clickable {
-  cursor: pointer;
-}
-
-.market-symbol.clickable:hover {
-  text-decoration: beiged;
-  color: #2563eb;
 }
 
 
 .market-symbol {
-  font-weight: 800;
   font-size: 20px;
+  font-weight: 800;
 }
+
+
+.market-symbol.clickable {
+  cursor: pointer;
+}
+
+
+.market-symbol.clickable:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
 
 .market-name {
-  font-size: 15px;
+  font-size: 14px;
   color: #6b7280;
-  margin-top: 2px;
 }
 
-.market-pct {
-  font-weight: 800;
-}
 
 .market-pct.up {
   color: #16a34a;
+  font-weight: 800;
 }
+
 
 .market-pct.down {
   color: #dc2626;
+  font-weight: 800;
 }
 
-.market-pct-label {
-  font-size: 16px;
-  color: #363638;
-  /* 灰 */
-  margin-right: 0px;
-}
-
-
-.market-card-mid {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-  gap: 10px;
-}
 
 .market-price {
   font-size: 18px;
   font-weight: 800;
 }
 
-.sparkline {
-  color: #2563eb;
+
+/* ============================
+   Dashboard – My News
+   ============================ */
+
+.dashboard-fourth-row {
+  width: 80%;
+  margin: 36px auto 0;
+  max-width: 1200px;
 }
 
-.market-card-foot {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #6b7280;
+.dashboard-fourth-row .dashboard-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #111827;
 }
 
-/* MyNews list */
+/* News container box */
+.dashboard-fourth-row .news-container,
+.dashboard-fourth-row .news-card,
+.dashboard-fourth-row .my-news-box {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  position: relative;
+}
+
+/* 左侧蓝色装饰线（Google 风格） */
+.dashboard-fourth-row .news-container::before,
+.dashboard-fourth-row .news-card::before,
+.dashboard-fourth-row .my-news-box::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 4px;
+  border-radius: 4px;
+  background: #2563eb;
+}
+
+/* News list */
 .news-list {
   list-style: none;
   margin: 0;
@@ -335,8 +385,8 @@
 }
 
 .news-row {
-  padding: 10px 4px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .news-row:last-child {
@@ -344,8 +394,8 @@
 }
 
 .news-link {
-  font-weight: 700;
-  color: #111827;
+  font-weight: 600;
+  color: #2563eb;
   text-decoration: none;
 }
 

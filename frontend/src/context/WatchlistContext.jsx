@@ -1,71 +1,53 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { getCSRFToken } from "../utils/csrf";
 
 const WatchlistContext = createContext(null);
 
 /**
  * WatchlistProvider
  *
- * - 单一事实来源：后端 /api/core/watchlist/
- * - 未登录：localStorage fallback
- * - optimistic update
- * - 自动 uppercase
+ * 设计原则：
+ * - 单一事实来源：后端数据库
+ * - 必须登录（基于 Django session）
+ * - 不使用 localStorage
+ * - 所有写操作必须带 CSRF
  */
 export function WatchlistProvider({ children }) {
   const [watchlist, setWatchlist] = useState([]);
-  const [ready, setReady] = useState(false); // 是否完成初始化
-  const isLoggedInRef = useRef(false);
+  const [ready, setReady] = useState(false);
 
   /* ------------------------------
-     初始化：后端优先，localStorage 兜底
+     初始化：只从后端读取
      ------------------------------ */
   useEffect(() => {
     let cancelled = false;
 
-    async function init() {
-      // 1️⃣ localStorage 兜底（未登录 / 首屏）
-      try {
-        const saved = JSON.parse(localStorage.getItem("watchlist") || "[]");
-        if (Array.isArray(saved) && !cancelled) {
-          setWatchlist(saved);
-        }
-      } catch {
-        // ignore
-      }
-
-      // 2️⃣ 尝试后端（已登录）
+    async function load() {
       try {
         const res = await fetch("/api/core/watchlist/", {
           credentials: "include",
         });
 
-        if (!res.ok) throw new Error("not logged in");
-
-        const serverList = await res.json();
-        if (Array.isArray(serverList) && !cancelled) {
-          isLoggedInRef.current = true;
-          setWatchlist(serverList);
-          localStorage.setItem("watchlist", JSON.stringify(serverList));
+        if (!res.ok) {
+          // 未登录 / 403 / 302
+          setWatchlist([]);
+          return;
         }
-      } catch {
-        // 未登录 → 继续用 localStorage
+
+        const data = await res.json();
+        if (!cancelled && Array.isArray(data)) {
+          setWatchlist(data);
+        }
       } finally {
         if (!cancelled) setReady(true);
       }
     }
 
-    init();
+    load();
     return () => {
       cancelled = true;
     };
   }, []);
-
-  /* ------------------------------
-     同步 localStorage（仅兜底用）
-     ------------------------------ */
-  useEffect(() => {
-    if (!ready) return;
-    localStorage.setItem("watchlist", JSON.stringify(watchlist));
-  }, [watchlist, ready]);
 
   /* ------------------------------
      helpers
@@ -75,52 +57,58 @@ export function WatchlistProvider({ children }) {
   }
 
   /* ------------------------------
-     add symbol
+     add symbol（写数据库）
      ------------------------------ */
   async function add(symbol) {
     const sym = normalize(symbol);
     if (!sym) return;
 
-    setWatchlist((prev) => {
-      if (prev.includes(sym)) return prev;
-      return [...prev, sym];
+    const res = await fetch("/api/core/watchlist/", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({ symbol: sym }),
     });
 
-    // 未登录 → 不打后端
-    if (!isLoggedInRef.current) return;
+    if (!res.ok) {
+      // 403 / 401 / 500 → 直接放弃，不更新 UI
+      return;
+    }
 
-    try {
-      await fetch("/api/core/watchlist/", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ symbol: sym }),
-      });
-    } catch {
-      // 后端失败不回滚（乐观更新）
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      // 后端返回的是权威状态
+      setWatchlist(data);
     }
   }
 
   /* ------------------------------
-     remove symbol
+     remove symbol（写数据库）
      ------------------------------ */
   async function remove(symbol) {
     const sym = normalize(symbol);
     if (!sym) return;
 
-    setWatchlist((prev) => prev.filter((s) => s !== sym));
+    const res = await fetch("/api/core/watchlist/", {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({ symbol: sym }),
+    });
 
-    if (!isLoggedInRef.current) return;
+    if (!res.ok) {
+      return;
+    }
 
-    try {
-      await fetch("/api/core/watchlist/", {
-        method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ symbol: sym }),
-      });
-    } catch {
-      // ignore
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      setWatchlist(data);
     }
   }
 
@@ -130,7 +118,7 @@ export function WatchlistProvider({ children }) {
         watchlist,
         add,
         remove,
-        ready, // dashboard 可用来等初始化
+        ready, // 页面可以用来判断是否初始化完成
       }}
     >
       {children}

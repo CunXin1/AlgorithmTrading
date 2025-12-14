@@ -87,7 +87,7 @@ export default function EmailSubscriptionsCard() {
           disabled={!canAdd}
           title={!canAdd ? "Max 3 emails" : "Add email"}
         >
-          + Add
+          Add
         </button>
       </div>
 
