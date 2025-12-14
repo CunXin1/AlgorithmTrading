@@ -14,38 +14,21 @@ import TradingViewChart from "../components/TradingviewChart.jsx";
 import RightSidebar from "../components/RightSidebar.jsx";
 import "../styles/layout.css";
 import NewsPanel from "../components/NewsPanel.jsx";
-
+import { useWatchlist } from "../context/WatchlistContext";
 
 const TRENDING = ["NVDA", "AVGO", "PLTR", "META", "AMD", "TSLA", "AMZN"];
-const LS_KEY = "algorithmtrading_watchlist_v1";
 
 export default function StockPage() {
   const { symbol } = useParams();
   const navigate = useNavigate();
 
-  const [currentSymbol, setCurrentSymbol] = useState(symbol?.toUpperCase() || "AAPL");
+  const [currentSymbol, setCurrentSymbol] = useState(
+    symbol?.toUpperCase() || "AAPL"
+  );
   const [input, setInput] = useState("");
-  const [watchlist, setWatchlist] = useState([]);
 
-  /* ------------------------------
-     Watchlist (localStorage)
-     ------------------------------ */
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        setWatchlist(parsed.map((s) => s.toUpperCase()));
-      }
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify(watchlist));
-    } catch {}
-  }, [watchlist]);
+  // ✅ 全站唯一 watchlist 来源（Context）
+  const { watchlist, add, remove } = useWatchlist();
 
   /* ------------------------------
      Sync URL → state
@@ -64,18 +47,8 @@ export default function StockPage() {
     const formatted = input.trim().toUpperCase();
     if (!formatted) return;
 
-    setInput("");
+    setCurrentSymbol(formatted);
     navigate(`/stock/${formatted.toLowerCase()}`);
-  };
-
-  const addToWatchlist = (sym) => {
-    const s = sym.toUpperCase();
-    setWatchlist((prev) => (prev.includes(s) ? prev : [...prev, s]));
-  };
-
-  const removeFromWatchlist = (sym) => {
-    const s = sym.toUpperCase();
-    setWatchlist((prev) => prev.filter((x) => x !== s));
   };
 
   /* ------------------------------
@@ -99,7 +72,7 @@ export default function StockPage() {
           <button
             type="button"
             className="search-btn secondary"
-            onClick={() => addToWatchlist(currentSymbol)}
+            onClick={() => add(input || currentSymbol)}
           >
             + Watchlist
           </button>
@@ -117,20 +90,15 @@ export default function StockPage() {
           </section>
         </div>
 
-        {/* Right: Sidebar */}
-        <RightSidebar
-          trending={TRENDING}
-          watchlist={watchlist}
-          onAddToWatchlist={addToWatchlist}
-          onRemoveFromWatchlist={removeFromWatchlist}
-        />
+        {/* Right: Sidebar（Context 版本，不再传 watchlist props） */}
+        <RightSidebar trending={TRENDING} />
       </div>
- 
-  <section className="news-section">
-    <h3>{currentSymbol} News</h3>
-    <NewsPanel symbol={symbol} />
-  </section>
-  
+
+      {/* News */}
+      <section className="news-section">
+        <h3>{currentSymbol} News</h3>
+        <NewsPanel symbol={currentSymbol} />
+      </section>
 
       {/* Footer */}
       <footer className="footer">

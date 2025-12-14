@@ -3,26 +3,27 @@
 // ------------------------------------------------------------
 // Reusable right sidebar with:
 // - Trending stocks (click to /stock/:symbol)
-// - My Watchlist (empty state + add/remove + click)
+// - My Watchlist (context-based, backend-synced)
 // ------------------------------------------------------------
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useWatchlist } from "../context/WatchlistContext";
 
 export default function RightSidebar({
   trending = [],
-  watchlist = [],
-  onAddToWatchlist,
-  onRemoveFromWatchlist,
 }) {
   const navigate = useNavigate();
+
+  // ✅ 使用全局 Watchlist Context（与你 news 页面一致）
+  const { watchlist, add, remove } = useWatchlist();
 
   return (
     <aside className="right-sidebar">
       {/* Trending */}
       <div className="sidebar-card">
         <div className="sidebar-header">
-          <h4 className="sidebar-title">🔥 Trending Stocks</h4>
+          <h4 className="sidebar-title">Trending Stocks</h4>
         </div>
 
         <ul className="sidebar-list">
@@ -40,7 +41,8 @@ export default function RightSidebar({
               <button
                 type="button"
                 className="sidebar-action"
-                onClick={() => onAddToWatchlist?.(sym)}
+                onClick={() => add(sym)}   
+               
                 title="Add to watchlist"
               >
                 +
@@ -53,7 +55,7 @@ export default function RightSidebar({
       {/* Watchlist */}
       <div className="sidebar-card">
         <div className="sidebar-header">
-          <h4 className="sidebar-title">⭐ My Watchlist</h4>
+          <h4 className="sidebar-title">My Watchlist</h4>
         </div>
 
         {watchlist.length === 0 ? (
@@ -79,7 +81,7 @@ export default function RightSidebar({
                 <button
                   type="button"
                   className="sidebar-action remove"
-                  onClick={() => onRemoveFromWatchlist?.(sym)}
+                  onClick={() => remove(sym)}  
                   title="Remove"
                 >
                   ×

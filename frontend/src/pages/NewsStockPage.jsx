@@ -1,21 +1,30 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { fetchGoogleNews } from "../utils/news";
 import "../styles/newspage.css";
 import { useWatchlist } from "../context/WatchlistContext";
 
-export default function NewsPage() {
+export default function NewsStockPage() {
+    const { symbol } = useParams();
+
     const [fedNews, setFedNews] = useState([]);
     const [trendingNews, setTrendingNews] = useState([]);
-    const [picks, setPicks] = useState([]);
-    const [search, setSearch] = useState("");
+    const [stockNews, setStockNews] = useState([]);
+    const [search, setSearch] = useState(symbol || "");
 
     const { watchlist, add, remove } = useWatchlist();
 
     useEffect(() => {
         fetchGoogleNews("Federal Reserve Jerome Powell").then(setFedNews);
         fetchGoogleNews("Nasdaq 100 OR Bitcoin BTC").then(setTrendingNews);
-        fetchGoogleNews("finance").then(setPicks);
     }, []);
+
+    // 当 symbol 改变时，重新拉该股票新闻
+    useEffect(() => {
+        if (!symbol) return;
+        setSearch(symbol);
+        fetchGoogleNews(symbol).then(setStockNews);
+    }, [symbol]);
 
     function formatDate(dateStr) {
         if (!dateStr) return "";
@@ -37,7 +46,7 @@ export default function NewsPage() {
     function handleAddWatchlist() {
         const sym = normalizeSymbol(search);
         if (!sym) return;
-        add(sym); // ✅ Context 统一管理
+        add(sym);
     }
 
     return (
@@ -118,8 +127,8 @@ export default function NewsPage() {
                         </div>
 
                         <div className="news-block picks-block">
-                            <h2>Picks For You</h2>
-                            {picks.map((n, i) => (
+                            <h2>{normalizeSymbol(symbol)} News</h2>
+                            {stockNews.map((n, i) => (
                                 <div key={i} className="news-item">
                                     <a href={n.link} target="_blank" rel="noreferrer">
                                         {n.title}

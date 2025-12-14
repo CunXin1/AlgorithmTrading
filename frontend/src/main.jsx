@@ -11,6 +11,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
+import { WatchlistProvider } from "./context/WatchlistContext";
 
 // Import global styles
 // 导入全局样式（字体、颜色、布局等）
@@ -21,6 +22,6 @@ import "./styles/layout.css";
 // 创建 React 根节点并渲染主应用组件 <App />
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <WatchlistProvider><App /></WatchlistProvider>
   </React.StrictMode>
 );

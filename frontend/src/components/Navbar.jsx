@@ -31,7 +31,6 @@ export default function Navbar() {
         <ul className="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/news">News</a></li>
-          <li><a href="/invest">Invest</a></li>
           <li><a href="/marketsentiment">Market Sentiment</a></li>
           <li><a href="/portfolio">Portfolio</a></li>
         </ul>

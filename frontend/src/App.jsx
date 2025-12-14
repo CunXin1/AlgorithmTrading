@@ -14,10 +14,12 @@ import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import PortfolioPage from "./pages/PortfolioPage";
-import MyPortfolioPage from "./pages/MyPortfolioPage"; 
+import MyPortfolioPage from "./pages/MyPortfolioPage";
 import StockPage from "./pages/StockPage";
 import DashboardPage from "./pages/DashboardPage";
 import MarketSentimentPage from "./pages/MarketSentimentPage.jsx";
+import NewsPage from "./pages/NewsPage.jsx";
+import NewsStockPage from "./pages/NewsStockPage.jsx";
 
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -41,9 +43,10 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-             <Route path="/stock/:symbol" element={<StockPage />} />
-             <Route path="/dashboard" element={<DashboardPage />} />
-            
+            <Route path="/stock/:symbol" element={<StockPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/news" element={<NewsPage />} />
+            <Route path="/news/:symbol" element={<NewsStockPage />} />
 
 
 
