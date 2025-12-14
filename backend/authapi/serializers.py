@@ -1,46 +1,31 @@
 # authapi/serializers.py
 from rest_framework import serializers
+from django.contrib.auth.models import User
 
 
 class RegisterSerializer(serializers.Serializer):
-    """
-    Serializer for user registration data.
-
-    Fields:
-      - email: user email address (used as unique identifier)
-      - password: raw password string
-
-    用户注册数据的序列化与校验器：
-      - email: 用户邮箱（作为唯一标识）
-      - password: 明文密码（在服务层中进行哈希存储）
-    """
-
     email = serializers.EmailField()
-    password = serializers.CharField(
-        min_length=6,
-        max_length=128,
-        write_only=True,
-        style={"input_type": "password"},
-    )
+    username = serializers.CharField(min_length=3, max_length=30)
+    password = serializers.CharField(min_length=6, write_only=True)
+    confirm_password = serializers.CharField(min_length=6, write_only=True)
+    code = serializers.CharField(min_length=6, max_length=6)
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username already exists")
+        return value
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email already registered")
+        return value
+
+    def validate(self, attrs):
+        if attrs["password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError("Passwords do not match")
+        return attrs
 
 
 class LoginSerializer(serializers.Serializer):
-    """
-    Serializer for user login data.
-
-    Fields:
-      - email: existing user email
-      - password: raw password string
-
-    用户登录数据的序列化与校验器：
-      - email: 已注册用户邮箱
-      - password: 明文密码
-    """
-
     email = serializers.EmailField()
-    password = serializers.CharField(
-        min_length=1,
-        max_length=128,
-        write_only=True,
-        style={"input_type": "password"},
-    )
+    password = serializers.CharField(write_only=True)

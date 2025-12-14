@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import "../styles/layout.css";
 import "../styles/dashboard.css";
 
@@ -10,6 +11,33 @@ import MarketCardsRow from "../components/dashboard/MarketCardsRow.jsx";
 import MyNewsBlock from "../components/dashboard/MyNewsBlock.jsx";
 
 export default function DashboardPage() {
+  const { username } = useParams(); // 👈 URL 里的 username
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/auth/me/", {
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          window.location.href = "/login";
+          return;
+        }
+
+        const me = await res.json();
+
+        // ❗ 防止访问别人的 dashboard
+        if (me.username !== username) {
+          window.location.href = `/dashboard/${me.username}`;
+        }
+      })
+      .finally(() => {
+        setChecking(false);
+      });
+  }, [username]);
+
+  if (checking) return null;
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-container">

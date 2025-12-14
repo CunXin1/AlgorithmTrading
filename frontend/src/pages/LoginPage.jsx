@@ -1,50 +1,73 @@
 import { useState } from "react";
-import AuthCard from "../components/AuthCard";
-import { login } from "../services/authService";
+import "../styles/registerpage.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
+  const [error, setError] = useState("");
 
-  async function handleLogin() {
+  async function handleLogin(e) {
+    e.preventDefault();
+    setError("");
+
     try {
-      const res = await login(email, password);
-      localStorage.setItem("token", res.token);
-      window.location.href = "/"; // 登录成功跳转首页
+      const res = await fetch("/api/auth/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login failed");
+
+      const resMe = await fetch("/api/auth/me/", {
+        credentials: "include",
+      });
+      const me = await resMe.json();
+
+      window.location.href = `/dashboard/${me.username}`;
+
     } catch (e) {
-      setErr("Invalid email or password");
+      setError(e.message);
     }
   }
 
   return (
-    <AuthCard title="Sign in" subtitle="to AlgorithmTrading">
-      <input
-        className="auth-input"
-        placeholder="Email"
-        type="email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
+    <div className="auth-page">
+      <form className="auth-card" onSubmit={handleLogin}>
+        <h1 className="auth-title">Sign in</h1>
+        <p className="auth-subtitle">AlgorithmTrading</p>
 
-      <input
-        className="auth-input"
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          className="auth-input"
+          placeholder="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      {err && <div style={{ color: "red", marginBottom: 10 }}>{err}</div>}
+        <input
+          className="auth-input"
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <button className="auth-button" onClick={handleLogin}>
-        Sign In
-      </button>
+        {error && <div className="auth-error">{error}</div>}
 
-      <div
-        className="auth-link"
-        onClick={() => (window.location.href = "/register")}
-      >
-        Create account
-      </div>
-    </AuthCard>
+        <button className="auth-primary" type="submit">
+          Login
+        </button>
+
+        <div
+          className="auth-link"
+          onClick={() => (window.location.href = "/register")}
+        >
+          Create an account
+        </div>
+      </form>
+    </div>
   );
 }

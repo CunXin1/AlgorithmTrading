@@ -44,7 +44,8 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/stock/:symbol" element={<StockPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard/:username" element={<DashboardPage />} />
+
             <Route path="/news" element={<NewsPage />} />
             <Route path="/news/:symbol" element={<NewsStockPage />} />
 
