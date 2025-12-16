@@ -3,6 +3,20 @@ import { useEffect, useMemo, useState } from "react";
 import ChartComponent from "../components/ChartComponent";
 import "../styles/MarketSentimentPage.css";
 import { normalizeRating, getSentimentClass, formatScore } from "../utils/sentimentUtils";
+import EmailSubCard from "../components/dashboard/EmailSubscriptionsCard.jsx";
+
+
+function getCSRFToken() {
+    const name = "csrftoken=";
+    const cookies = document.cookie.split(";");
+    for (let c of cookies) {
+        c = c.trim();
+        if (c.startsWith(name)) {
+            return c.slice(name.length);
+        }
+    }
+    return "";
+}
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
@@ -61,30 +75,117 @@ export default function MarketSentimentPage() {
     const [subs, setSubs] = useState([]); // [{ id, email, enabled }]
     const [emailInput, setEmailInput] = useState("");
 
+    async function reloadSubs() {
+        const res = await fetch(`${API_BASE}/api/core/email-subscription/`, {
+            credentials: "include",
+        });
 
-    function handleAddEmail() {
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+            console.error("Not authenticated or invalid response");
+            return;
+        }
+
+        const data = await res.json();
+        console.log("Reload subs:", data);
+        setSubs(Array.isArray(data) ? data : []);
+    }
+
+    useEffect(() => {
+        reloadSubs();
+    }, []);
+
+
+
+    async function handleAddEmail() {
         const email = normalizeEmail(emailInput);
         if (!email) return;
         if (!isValidEmail(email)) return;
         if (subs.length >= MAX_EMAILS) return;
-        if (subs.some((x) => x.email === email)) return;
 
-        setSubs((prev) => [
-            ...prev,
-            { id: crypto.randomUUID(), email, enabled: true },
-        ]);
-        setEmailInput("");
+        try {
+            const res = await fetch(`${API_BASE}/api/core/email-subscription/`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                await reloadSubs();   // 同步后端真实状态
+                throw new Error(data.error || "Add email failed");
+            }
+
+            // 后端应返回 {id, email, enabled}
+            setSubs((prev) => [...prev, data]);
+            await reloadSubs();   // 同步后端真实状态
+            setEmailInput("");
+        } catch (e) {
+            console.error("add email error:", e);
+        }
     }
 
-    function toggleEmail(id) {
-        setSubs((prev) =>
-            prev.map((x) => (x.id === id ? { ...x, enabled: !x.enabled } : x))
-        );
+
+    async function toggleEmail(id) {
+        const target = subs.find((x) => x.id === id);
+        if (!target) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/core/email-subscription/`, {
+                method: "PATCH",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+
+                body: JSON.stringify({ id, enabled: !target.enabled }),
+            });
+
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                await reloadSubs();   // 同步后端真实状态
+                throw new Error(data.error || "Toggle failed");
+            }
+            await reloadSubs();   // 同步后端真实状态
+            setSubs((prev) =>
+                prev.map((x) => (x.id === id ? { ...x, enabled: !target.enabled } : x))
+            );
+        } catch (e) {
+            console.error("toggle email error:", e);
+        }
     }
 
-    function removeEmail(id) {
-        setSubs((prev) => prev.filter((x) => x.id !== id));
+    async function removeEmail(id) {
+        try {
+            const res = await fetch(`${API_BASE}/api/core/email-subscription/`, {
+                method: "DELETE",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+
+                body: JSON.stringify({ id }),
+            });
+
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                await reloadSubs();   // 同步后端真实状态
+                throw new Error(data.error || "Remove failed");
+            }
+            await reloadSubs();   // 同步后端真实状态
+            setSubs((prev) => prev.filter((x) => x.id !== id));
+        } catch (e) {
+            console.error("remove email error:", e);
+        }
     }
+
 
 
 
@@ -229,6 +330,14 @@ export default function MarketSentimentPage() {
                 <div className="ms-email-divider" />
                 {/* ===== Email Alert Section ===== */}
                 <div className="ms-email-section">
+                    <EmailSubCard
+                        subs={subs}
+                        input={emailInput}
+                        setInput={setEmailInput}
+                        handleAdd={handleAddEmail}
+                        toggle={toggleEmail}
+                        remove={removeEmail}
+                    />
 
                     <div className="ms-email-header">
                         <h2 className="ms-email-title">Email Subscriptions</h2>

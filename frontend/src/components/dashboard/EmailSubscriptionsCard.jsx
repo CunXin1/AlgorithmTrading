@@ -1,44 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 
-const MAX_EMAILS = 3;
+export default function EmailSubCard({
+  subs = [],          // 👈 关键
+  input = "",
+  setInput = () => {},
+  handleAdd = () => {},
+  toggle = () => {},
+  remove = () => {},
+  MAX_EMAILS = 3,
+}) {
 
-function normalizeEmail(e) {
-  return String(e || "").trim().toLowerCase();
-}
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-export default function EmailSubCard() {
-  const [subs, setSubs] = useState([]); // [{ id, email, enabled }]
-  const [input, setInput] = useState("");
-
-  function handleAdd() {
-    const email = normalizeEmail(input);
-    if (!email) return;
-    if (!isValidEmail(email)) return;
-    if (subs.length >= MAX_EMAILS) return;
-    if (subs.some((x) => x.email === email)) return;
-
-    setSubs((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), email, enabled: true },
-    ]);
-    setInput("");
-  }
-
-  function toggle(id) {
-    setSubs((prev) =>
-      prev.map((x) =>
-        x.id === id ? { ...x, enabled: !x.enabled } : x
-      )
-    );
-  }
-
-  function remove(id) {
-    setSubs((prev) => prev.filter((x) => x.id !== id));
-  }
 
   return (
   <div className="dash-card">

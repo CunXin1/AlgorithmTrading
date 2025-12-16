@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from market_sentiment.services.alert_logic import classify, handle_alert
 import os
+from django.db import IntegrityError
 
 from market_sentiment.services.fetcher import fetch_daily_latest
 
@@ -94,23 +95,58 @@ def watchlist_api(request):
     return JsonResponse(wl.symbols, safe=False)
 
 @login_required
-@require_http_methods(["POST", "DELETE"])
+@require_http_methods(["GET", "POST", "PATCH", "DELETE"])
 def email_subscription_api(request):
-    body = json.loads(request.body or "{}")
     user = request.user
 
-    # ===== 新订阅 =====
+    # ===== GET: list subscriptions =====
+    if request.method == "GET":
+        subs = EmailSubscription.objects.filter(user=user)
+        return JsonResponse(
+            [
+                {
+                    "id": s.id,
+                    "email": s.email,
+                    "enabled": s.enabled,
+                }
+                for s in subs
+            ],
+            safe=False,
+        )
+
+    # 下面方法需要 JSON body
+    body = json.loads(request.body or "{}")
+
+    # ===== POST: add subscription =====
     if request.method == "POST":
         email = body.get("email", "").strip().lower()
         if not email:
             return JsonResponse({"error": "email required"}, status=400)
 
-        sub = EmailSubscription.objects.create(
-            user=user,
-            email=email,
-            enabled=True,
-        )
+        if EmailSubscription.objects.filter(user=user).count() >= 3:
+            return JsonResponse(
+                {"error": "Maximum 3 emails allowed"},
+                status=400,
+            )
 
+        try:
+            sub, created = EmailSubscription.objects.get_or_create(
+                user=user,
+                email=email,
+                defaults={"enabled": True},
+            )
+            if not created:
+                return JsonResponse(
+                    {"error": "Email already subscribed"},
+                    status=400,
+                )
+        except IntegrityError:
+            return JsonResponse(
+                {"error": "Email already subscribed"},
+                status=400,
+            )
+
+        # ✅ 订阅成功邮件
         send_mail(
             subject="Market Sentiment Alerts Enabled",
             message=(
@@ -123,9 +159,32 @@ def email_subscription_api(request):
             fail_silently=False,
         )
 
+        # ⚠️ 关键：返回前端需要的数据
+        return JsonResponse(
+            {
+                "id": sub.id,
+                "email": sub.email,
+                "enabled": sub.enabled,
+            },
+            status=201,
+        )
+
+    # ===== PATCH: toggle enabled =====
+    if request.method == "PATCH":
+        sub_id = body.get("id")
+        enabled = body.get("enabled")
+
+        try:
+            sub = EmailSubscription.objects.get(id=sub_id, user=user)
+        except EmailSubscription.DoesNotExist:
+            return JsonResponse({"error": "not found"}, status=404)
+
+        sub.enabled = bool(enabled)
+        sub.save()
+
         return JsonResponse({"ok": True})
 
-    # ===== 取消订阅 =====
+    # ===== DELETE: remove subscription =====
     if request.method == "DELETE":
         sub_id = body.get("id")
 
@@ -137,6 +196,7 @@ def email_subscription_api(request):
         email = sub.email
         sub.delete()
 
+        # ✅ 取消订阅邮件
         send_mail(
             subject="Market Sentiment Alerts Disabled",
             message=(
