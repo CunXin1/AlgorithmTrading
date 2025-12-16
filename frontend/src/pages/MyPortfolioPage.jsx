@@ -7,6 +7,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import TradingViewChart from "../components/TradingViewChart";
 import WatchlistCard from "../components/dashboard/WatchlistCard";
 import "../styles/myportfolio.css";
+import { useRef } from "react";
 
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
@@ -102,6 +103,10 @@ export default function MyPortfolioPage() {
   const [p1Qty, setP1Qty] = useState("");
   const [p2Sym, setP2Sym] = useState("");
   const [p2Qty, setP2Qty] = useState("");
+  const [hydrated, setHydrated] = useState(false);
+
+
+  const saveTimerRef = useRef(null);
 
   /* ------------------------------
      Load profile + portfolios
@@ -144,31 +149,40 @@ export default function MyPortfolioPage() {
         p1 && p1.holdings.length
           ? p1
           : {
-              name: (p1 && p1.name) || "Portfolio 1",
-              holdings: DEFAULT_P1.map((s) => ({
-                symbol: s,
-                shares: 1,
-                buy_price: null,
-              })),
-            };
+            name: (p1 && p1.name) || "Portfolio 1",
+            holdings: DEFAULT_P1.map((s) => ({
+              symbol: s,
+              shares: 1,
+              buy_price: null,
+            })),
+          };
 
       const initP2 =
         p2 && p2.holdings.length
           ? p2
           : {
-              name: (p2 && p2.name) || "Portfolio 2",
-              holdings: DEFAULT_P2.map((s) => ({
-                symbol: s,
-                shares: 1,
-                buy_price: null,
-              })),
-            };
+            name: (p2 && p2.name) || "Portfolio 2",
+            holdings: DEFAULT_P2.map((s) => ({
+              symbol: s,
+              shares: 1,
+              buy_price: null,
+            })),
+          };
 
       setPortfolio1(initP1);
       setPortfolio2(initP2);
 
       setTvSymbol(initP1.holdings[0]?.symbol || "AAPL");
       setLoading(false);
+
+      setPortfolio1(initP1);
+      setPortfolio2(initP2);
+
+      setTvSymbol(initP1.holdings[0]?.symbol || "AAPL");
+
+      setLoading(false);
+      setHydrated(true); // ✅ 非常关键：数据已从后端 hydrate 完成
+
     }
 
     loadProfile();
@@ -195,7 +209,7 @@ export default function MyPortfolioPage() {
             credentials: "include",
           });
           if (res.ok) map[sym] = await res.json();
-        } catch {}
+        } catch { }
       }
       setPriceMap(map);
     }
@@ -230,6 +244,43 @@ export default function MyPortfolioPage() {
     if (p2 !== portfolio2) setPortfolio2(p2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceMap]);
+
+
+  /* */
+  useEffect(() => {
+    // ⛔️ 防止首次加载（hydrate）时立刻 PATCH
+    if (!hydrated) return;
+    if (!portfolio1 || !portfolio2) return;
+
+    // debounce：500ms 内多次修改只保存一次
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
+
+    saveTimerRef.current = setTimeout(() => {
+      fetch(`${API_BASE}/api/core/profile/`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          portfolio1,
+          portfolio2,
+        }),
+      }).catch(() => {
+        // 静默失败即可；需要的话你以后可以加 toast
+      });
+    }, 500);
+
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, [hydrated, portfolio1, portfolio2]);
+
+
 
   /* ------------------------------
      Helpers
