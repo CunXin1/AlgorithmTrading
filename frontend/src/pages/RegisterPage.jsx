@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import "../styles/registerpage.css";
 
 
-const API_BASE = import.meta.env.VITE_API_URL;
-
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -46,7 +44,7 @@ export default function RegisterPage() {
 
     setSending(true);
     try {
-      const res = await fetchJSON(`${API_BASE}/api/auth/send-code/`, {
+      const res = await fetchJSON(`/api/auth/send-code/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -87,7 +85,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await fetchJSON(`${API_BASE}/api/auth/register/`, {
+      const res = await fetchJSON(`/api/auth/register/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

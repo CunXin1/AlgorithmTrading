@@ -20,8 +20,6 @@ function getCSRFToken() {
     return "";
 }
 
-const API_BASE = import.meta.env.VITE_API_URL;
-
 const CORE_INDEX = "fear_and_greed";
 
 const OTHER_INDEXES = [
@@ -84,7 +82,7 @@ export default function MarketSentimentPage() {
         let cancelled = false;
         setError("");
 
-        fetchJSON(`${API_BASE}/api/sentiment/index/${CORE_INDEX}/history/?days=${rangeDays}`)
+        fetchJSON(`/api/sentiment/index/${CORE_INDEX}/history/?days=${rangeDays}`)
             .then((data) => {
                 if (!cancelled) setFgSeries(Array.isArray(data) ? data : []);
             })
@@ -106,7 +104,7 @@ export default function MarketSentimentPage() {
             try {
                 const results = await Promise.all(
                     OTHER_INDEXES.map((idx) =>
-                        fetchJSON(`${API_BASE}/api/sentiment/index/${idx}/history/?days=365`).then((data) => [
+                        fetchJSON(`/api/sentiment/index/${idx}/history/?days=365`).then((data) => [
                             idx,
                             Array.isArray(data) ? data : [],
                         ])

@@ -10,8 +10,6 @@ import { useRef } from "react";
 
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
-const API_BASE = import.meta.env.VITE_API_URL;
-
 const DEFAULT_P1 = ["AAPL", "GOOGL", "NVDA"];
 const DEFAULT_P2 = ["TSLA", "PLTR", "AMD"];
 
@@ -112,7 +110,7 @@ export default function MyPortfolioPage() {
      ------------------------------ */
   useEffect(() => {
     async function loadProfile() {
-      const res = await fetch(`${API_BASE}/api/core/profile/`, {
+      const res = await fetch(`/api/core/profile/`, {
         credentials: "include",
       });
 
@@ -132,8 +130,9 @@ export default function MyPortfolioPage() {
       setUsername(data.username);
 
       setAvatar(
-        data.avatar ? `${API_BASE}${data.avatar}` : "/assets/defaultprofile.png"
+        data.avatar ? data.avatar : "/assets/defaultprofile.png"
       );
+
 
       const p1 =
         data.portfolio1 && Array.isArray(data.portfolio1.holdings)
@@ -204,7 +203,7 @@ export default function MyPortfolioPage() {
       const map = {};
       for (const sym of uniq) {
         try {
-          const res = await fetch(`${API_BASE}/api/currentprice/${sym}/`, {
+          const res = await fetch(`/api/currentprice/${sym}/`, {
             credentials: "include",
           });
           if (res.ok) map[sym] = await res.json();
@@ -257,7 +256,7 @@ export default function MyPortfolioPage() {
     }
 
     saveTimerRef.current = setTimeout(() => {
-      fetch(`${API_BASE}/api/core/profile/`, {
+      fetch(`/api/core/profile/`, {
         method: "PATCH",
         credentials: "include",
         headers: {

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 
-
 export default function ProfileCard() {
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
@@ -12,10 +11,6 @@ export default function ProfileCard() {
     const [newUsername, setNewUsername] = useState("");
     const [newAvatar, setNewAvatar] = useState(null);
     const [error, setError] = useState("");
-
-
-    const API_BASE = import.meta.env.VITE_API_URL;
-
 
     function getCSRFToken() {
         const name = "csrftoken=";
@@ -45,10 +40,9 @@ export default function ProfileCard() {
                 setUsername(data.username);
                 setNewUsername(data.username);
                 setAvatar(
-                    data.avatar
-                        ? `${API_BASE}${data.avatar}`
-                        : "/assets/defaultprofile.png"
+                    data.avatar ? data.avatar : "/assets/defaultprofile.png"
                 );
+
             })
             .catch(() => { })
             .finally(() => setLoading(false));
@@ -87,9 +81,10 @@ export default function ProfileCard() {
             setUsername(data.username);
             setAvatar(
                 data.avatar
-                    ? `${API_BASE}${data.avatar}?t=${Date.now()}`
+                    ? `${data.avatar}?t=${Date.now()}`
                     : "/assets/defaultprofile.png"
             );
+
 
             setEditing(false);
 

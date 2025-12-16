@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "../styles/registerpage.css";
 
-const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,7 +12,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetchJSON(`${API_BASE}/api/auth/login/`, {
+      const res = await fetchJSON(`/api/auth/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -23,7 +22,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Login failed");
 
-      const resMe = await fetchJSON(`${API_BASE}/api/auth/me/`, {
+      const resMe = await fetchJSON(`/api/auth/me/`, {
         credentials: "include",
       });
       const me = await resMe.json();

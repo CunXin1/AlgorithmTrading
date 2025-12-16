@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-const API_BASE = import.meta.env.VITE_API_URL;
 const MAX_EMAILS = 3;
 
 function getCSRFToken() {
@@ -26,7 +25,7 @@ export default function useEmailSubscriptions() {
   const [emailInput, setEmailInput] = useState("");
 
   async function reloadSubs() {
-    const res = await fetch(`${API_BASE}/api/core/email-subscription/`, {
+    const res = await fetch(`/api/core/email-subscription/`, {
       credentials: "include",
     });
     const data = await res.json();
@@ -42,7 +41,7 @@ export default function useEmailSubscriptions() {
     if (!email || !isValidEmail(email)) return;
     if (subs.length >= MAX_EMAILS) return;
 
-    await fetch(`${API_BASE}/api/core/email-subscription/`, {
+    await fetch(`/api/core/email-subscription/`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -60,7 +59,7 @@ export default function useEmailSubscriptions() {
     const target = subs.find((x) => x.id === id);
     if (!target) return;
 
-    await fetch(`${API_BASE}/api/core/email-subscription/`, {
+    await fetch(`/api/core/email-subscription/`, {
       method: "PATCH",
       credentials: "include",
       headers: {
@@ -74,7 +73,7 @@ export default function useEmailSubscriptions() {
   }
 
   async function removeEmail(id) {
-    await fetch(`${API_BASE}/api/core/email-subscription/`, {
+    await fetch(`/api/core/email-subscription/`, {
       method: "DELETE",
       credentials: "include",
       headers: {

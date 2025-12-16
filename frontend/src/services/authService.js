@@ -5,13 +5,12 @@
 // 所有和「认证 / 用户」相关的 HTTP 请求都集中在这里
 // ------------------------------------------------------------
 
-const API_BASE = "/api/auth";
 
 /* =========================
    Send email verification code
    ========================= */
 export async function sendCode(email) {
-  const res = await fetch(`${API_BASE}/send-code/`, {
+  const res = await fetch(`"/api/auth/send-code/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -38,7 +37,7 @@ export async function register({
   confirmPassword,
   code,
 }) {
-  const res = await fetch(`${API_BASE}/register/`, {
+  const res = await fetch(`"/api/auth/register/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -66,7 +65,7 @@ export async function register({
    Login
    ========================= */
 export async function login(email, password) {
-  const res = await fetch(`${API_BASE}/login/`, {
+  const res = await fetch(`"/api/auth/login/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -98,7 +97,7 @@ export async function logout() {
 
   // 2️⃣ 通知后端（如果你实现了 /logout/）
   try {
-    await fetch(`${API_BASE}/logout/`, {
+    await fetch(`"/api/auth/logout/`, {
       method: "POST",
       credentials: "include",
     });
@@ -111,7 +110,7 @@ export async function logout() {
    Get current user (optional)
    ========================= */
 export async function getMe() {
-  const res = await fetch(`${API_BASE}/me/`, {
+  const res = await fetch(`"/api/auth/me/`, {
     method: "GET",
     credentials: "include",
   });
