@@ -35,7 +35,7 @@ export default function ProfileCard() {
        Load profile
        ------------------------------ */
     useEffect(() => {
-        fetch("/api/auth/me/", {
+        fetch("/api/core/profile/", {
             credentials: "include",
         })
             .then(async (res) => {
@@ -45,7 +45,9 @@ export default function ProfileCard() {
                 setUsername(data.username);
                 setNewUsername(data.username);
                 setAvatar(
-                    data.avatar_url || "/assets/defaultprofile.png"
+                    data.avatar
+                        ? `${API_BASE}${data.avatar}`
+                        : "/assets/defaultprofile.png"
                 );
             })
             .catch(() => { })
@@ -113,11 +115,39 @@ export default function ProfileCard() {
             </div>
 
             <div className="profile-body">
-                <img
-                    src={avatar}
-                    alt="avatar"
-                    className="profile-avatar"
-                />
+                <div className="profile-avatar-wrapper">
+                    <img
+                        src={avatar}
+                        alt="avatar"
+                        className="profile-avatar"
+                    />
+
+                    {editing && (
+                        <div
+                            className="profile-avatar-overlay"
+                            onClick={() =>
+                                document.getElementById("avatar-input").click()
+                            }
+                        >
+                            Change
+                        </div>
+                    )}
+                </div>
+                {/* 隐藏的 file input（放这里！） */}
+                {editing && (
+                    <input
+                        id="avatar-input"
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            setNewAvatar(file);
+                            setAvatar(URL.createObjectURL(file));
+                        }}
+                    />
+                )}
 
                 <div className="profile-info">
                     {!editing ? (
@@ -139,18 +169,6 @@ export default function ProfileCard() {
                                     }
                                 />
                             </label>
-
-                            <label className="dash-label">
-                                Avatar
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) =>
-                                        setNewAvatar(e.target.files[0])
-                                    }
-                                />
-                            </label>
-
 
                             {error && (
                                 <div className="profile-error">

@@ -214,63 +214,227 @@
 .badge-greed { background: #e6f4ea; color: #137333; }
 .badge-extreme-greed { background: #ceead6; color: #0d652d; }
 
+
+/* Email section 上方分割线 */
+.ms-email-divider {
+  width: 90%;
+  max-width: 1000px;   /* 跟主内容宽度对齐 */
+  margin: 36px auto 2px;
+  border-top: 1px solid #ced1d6;  /* 👈 浅色实线 */
+}
+
+
 /* ========================= Alert Box ========================= */
+.ms-email-section {
+  width: 70%;
+  margin: 0 auto 24px;
+}
+
+.ms-email-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ms-email-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #202124;
+}
+
+.ms-email-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.ms-email-desc {
+  margin-top: 6px;
+  font-size: 15px;
+  color: #5f6368;
+}
+
+/* ===== Box: only interaction ===== */
+.ms-email-box {
+  margin-top: 16px;
+
+  padding: 40px 60px 30px;          /* 👈 padding 变大 */
+
+  border: 1px solid #e6e8eb;
+  border-radius: 14px;
+  background: #ffffff;
+
+  box-shadow:
+    0 1px 2px rgba(190, 193, 196, 0.08),
+    0 2px 6px rgba(122, 127, 131, 0.12);  /* 👈 Google Card 阴影 */
+}
+
+
+
+/* 整个模块：更宽一点、更像设置页 */
 .ms-alert-box {
-  margin-top: 22px;
-  padding-top: 16px;
-  border-top: 1px solid #e6e8eb;
+  margin-top: 24px;
+  padding: 18px 20px;
+  border: 1px solid #e6e8eb;
+  border-radius: 14px;
+  background: #ffffff;
+  max-width: 520px;            /* 👈 比之前宽 */
+}
+
+.ms-email-box > * {
+  max-width: 760px;   /* 👈 内容宽度 */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* Header */
+.ms-alert-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
 }
 
 .ms-alert-title {
   font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 4px;
+  font-weight: 600;
+  color: #202124;
 }
 
+.ms-alert-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+/* Description */
 .ms-alert-desc {
-  font-size: 18px;
+  font-size: 15px;
   color: #5f6368;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
+/* Input + Add */
 .ms-alert-form {
   display: flex;
   gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
 }
 
 .ms-alert-input {
   flex: 1;
-  padding: 10px 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #dadce0;
-  font-size: 16px;
+  font-size: 15px;
+  color: #202124;
+  outline: none;
 }
 
-.ms-alert-btn {
-  padding: 8px 14px;
+.ms-alert-input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 1px rgba(26,115,232,0.25);
+}
+
+/* Add 按钮：永远蓝色（disabled 也只是不能点） */
+.ms-alert-add {
+  padding: 10px 18px;
   border-radius: 999px;
   border: none;
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   background: #1a73e8;
-  color: white;
+  color: #ffffff;
 }
 
-.ms-alert-btn.off {
+.ms-alert-add:hover:not(:disabled) {
+  background: #1669d3;
+}
+
+.ms-alert-add:disabled {
+  opacity: 0.45;        /* 👈 只是不能点，不变灰 */
+  cursor: not-allowed;
+}
+
+/* 空状态 */
+.ms-alert-empty {
+  font-size: 14px;
+  color: #6b7280;
+  padding: 10px 2px;
+}
+
+/* 单行 email */
+.ms-alert-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+}
+
+.ms-alert-row:not(:last-child) {
+  border-bottom: 1px solid #e6e8eb;
+}
+
+.ms-alert-email {
+  font-size: 14px;
+  font-weight: 600;
+  color: #202124;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 右侧操作 */
+.ms-alert-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* On / Off：都蓝色，只是深浅不同 */
+.ms-alert-toggle {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 56px;
+  cursor: pointer;
   background: #1a73e8;
+  color: #ffffff;
 }
 
-.ms-alert-btn.on {
-  background: #5f6368;
+.ms-alert-toggle.off {
+  background: #4285f4;   /* 👈 仍然蓝色，但浅一点 */
 }
 
-.ms-alert-btn:hover {
-  opacity: 0.9;
+.ms-alert-toggle:hover {
+  filter: brightness(0.95);
 }
 
-.ms-alert-btn:active {
-  transform: scale(0.97);
+/* 删除按钮 × */
+.ms-alert-remove {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #9aa0a6;
 }
+
+.ms-alert-remove:hover {
+  color: #d93025;
+}
+
 
 
 

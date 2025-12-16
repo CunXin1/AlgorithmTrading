@@ -33,6 +33,16 @@ const LABELS = {
     safe_haven_demand: "Safe Haven Demand",
 };
 
+const MAX_EMAILS = 3;
+
+function normalizeEmail(e) {
+    return String(e || "").trim().toLowerCase();
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 async function fetchJSON(url) {
     const res = await fetch(url);
     if (!res.ok) {
@@ -42,34 +52,40 @@ async function fetchJSON(url) {
     return await res.json();
 }
 
-async function handleToggleAlert() {
-    if (!email) return;
-
-    if (!enabled) {
-        await fetch(`${API_BASE}/api/alerts/subscribe`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-        });
-        setEnabled(true);
-    } else {
-        await fetch(`${API_BASE}/api/alerts/subscribe`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-        });
-        setEnabled(false);
-    }
-}
 
 export default function MarketSentimentPage() {
     const [rangeDays, setRangeDays] = useState(365);
     const [fgSeries, setFgSeries] = useState([]);
     const [seriesMap, setSeriesMap] = useState({});
     const [error, setError] = useState("");
-    const [email, setEmail] = useState("");
-    const [enabled, setEnabled] = useState(false);
-    const [alertEnabled, setAlertEnabled] = useState(false);
+    const [subs, setSubs] = useState([]); // [{ id, email, enabled }]
+    const [emailInput, setEmailInput] = useState("");
+
+
+    function handleAddEmail() {
+        const email = normalizeEmail(emailInput);
+        if (!email) return;
+        if (!isValidEmail(email)) return;
+        if (subs.length >= MAX_EMAILS) return;
+        if (subs.some((x) => x.email === email)) return;
+
+        setSubs((prev) => [
+            ...prev,
+            { id: crypto.randomUUID(), email, enabled: true },
+        ]);
+        setEmailInput("");
+    }
+
+    function toggleEmail(id) {
+        setSubs((prev) =>
+            prev.map((x) => (x.id === id ? { ...x, enabled: !x.enabled } : x))
+        );
+    }
+
+    function removeEmail(id) {
+        setSubs((prev) => prev.filter((x) => x.id !== id));
+    }
+
 
 
     // Fetch F&G
@@ -210,36 +226,78 @@ export default function MarketSentimentPage() {
                         />
                     </div>
                 </div>
+                <div className="ms-email-divider" />
+                {/* ===== Email Alert Section ===== */}
+                <div className="ms-email-section">
 
-                {/* ===== Email Alert Subscription ===== */}
-                <div className="ms-alert-box">
-                    <div className="ms-alert-title">
-                        Get Fear & Greed Alerts
+                    <div className="ms-email-header">
+                        <h2 className="ms-email-title">Email Subscriptions</h2>
+                        <span className="ms-email-badge">
+                            {subs.length}/{MAX_EMAILS}
+                        </span>
                     </div>
 
-                    <div className="ms-alert-desc">
-                        Receive an email when the Fear & Greed Index enters or exits extreme conditions.
-                    </div>
+                    <p className="ms-email-desc">
+                        Receive email alerts for when Fear &amp; Greed enters or exits extreme conditions.
+                    </p>
 
-                    <div className="ms-alert-form">
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="ms-alert-input"
-                        />
+                    {/* Box: only input + list */}
+                    <div className="ms-email-box">
+                        <div className="ms-alert-form">
+                            <input
+                                type="email"
+                                placeholder="name@example.com"
+                                value={emailInput}
+                                onChange={(e) => setEmailInput(e.target.value)}
+                                className="ms-alert-input"
+                                disabled={subs.length >= MAX_EMAILS}
+                            />
 
-                        <button
-                            className={`ms-alert-btn ${alertEnabled ? "on" : "off"}`}
-                            onClick={() => setAlertEnabled((v) => !v)}
-                        >
-                            {alertEnabled ? "Disable" : "Enable"}
-                        </button>
-                        
+                            <button
+                                className="ms-alert-add"
+                                onClick={handleAddEmail}
+                                disabled={subs.length >= MAX_EMAILS}
+                                type="button"
+                            >
+                                Add
+                            </button>
+                        </div>
 
+                        {subs.length === 0 ? (
+                            <div className="ms-alert-empty">
+                                No email subscriptions yet.
+                            </div>
+                        ) : (
+                            <div className="ms-alert-list">
+                                {subs.map((x) => (
+                                    <div key={x.id} className="ms-alert-row">
+                                        <div className="ms-alert-email">{x.email}</div>
+
+                                        <div className="ms-alert-actions">
+                                            <button
+                                                className={`ms-alert-toggle ${x.enabled ? "on" : "off"}`}
+                                                onClick={() => toggleEmail(x.id)}
+                                                type="button"
+                                            >
+                                                {x.enabled ? "On" : "Off"}
+                                            </button>
+
+                                            <button
+                                                className="ms-alert-remove"
+                                                onClick={() => removeEmail(x.id)}
+                                                type="button"
+                                                title="Remove"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
+
 
 
                 <div className="ms-top-spacer" />

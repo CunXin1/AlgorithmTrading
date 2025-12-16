@@ -29,7 +29,6 @@
 
 
 
-
 /* =========================================================
    Shared Card Style (Google UI)
    ========================================================= */
@@ -202,6 +201,54 @@
   color: #dc2626;
 }
 
+.dash-btn-row {
+  display: flex;
+  gap: 10px; /* 👈 控制 Save / Cancel 间距，8–12 都好看 */
+  margin-top: 8px;
+}
+
+
+/* =========================================================
+   Profile Avatar Hover Upload
+   ========================================================= */
+
+.profile-avatar-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(17, 24, 39, 0.55); /* 深色半透明 */
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.profile-avatar-wrapper:hover .profile-avatar-overlay {
+  opacity: 1;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+  object-fit: cover;
+  background: #f3f4f6;
+}
+
+
 /* =========================================================
     (2) Watchlist – Fixed Height with Scrollbar
     ========================================================= */
@@ -236,6 +283,64 @@
 .dashboard-top-row .watchlist .dash-list::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+
+/* =========================================================
+   Email Subscription Card
+   ========================================================= */
+
+/* ===== Toggle button (On / Off) ===== */
+.dash-toggle {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 56px;        /* 保证 On / Off 宽度一致 */
+  text-align: center;
+}
+
+.dash-toggle.on {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.dash-toggle.off {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.dash-toggle:hover {
+  filter: brightness(0.95);
+}
+
+/* ===== Scrollable list (same behavior as Watchlist) ===== */
+.dash-list-scroll {
+  max-height: 80px;      /* 控制 card 内部高度 */
+  overflow-y: auto;
+  padding-right: 4px;    /* 给滚动条留空间 */
+}
+
+/* ===== Scrollbar styling (WebKit) ===== */
+.dash-list-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dash-list-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dash-list-scroll::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 999px;
+}
+
+.dash-list-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+
 
 
 
