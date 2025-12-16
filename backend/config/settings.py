@@ -17,6 +17,9 @@ load_dotenv() # 从 .env 文件加载环境变量
 # -------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # -------------------------------------------------------------
 # SECURITY
 # -------------------------------------------------------------
