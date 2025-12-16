@@ -1,20 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/registerpage.css";
-
+import { ENDPOINTS } from "../api/config";
+import { getCSRFToken } from "../utils/csrf";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  /* Fetch CSRF token on mount */
+  useEffect(() => {
+    fetch(ENDPOINTS.CSRF, { credentials: "include" }).catch(() => {});
+  }, []);
+
   async function handleLogin(e) {
     e.preventDefault();
     setError("");
 
     try {
-      const res = await fetchJSON(`/api/auth/login/`, {
+      const csrfToken = getCSRFToken();
+      const res = await fetch(ENDPOINTS.AUTH_LOGIN, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfToken && { "X-CSRFToken": csrfToken }),
+        },
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
@@ -22,12 +32,12 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Login failed");
 
-      const resMe = await fetchJSON(`/api/auth/me/`, {
+      const resMe = await fetch(ENDPOINTS.AUTH_ME, {
         credentials: "include",
       });
       const me = await resMe.json();
 
-      window.location.href = `/dashboard/${me.username}`;
+      window.location.href = "/dashboard";
 
     } catch (e) {
       setError(e.message);

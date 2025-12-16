@@ -1,0 +1,43 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<div id="content-main">
+    <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+        <h3>Fetch Stock News</h3>
+        <p>Fetch news from Google News RSS feed for stocks.</p>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <fieldset class="module aligned">
+            <h2>Fetch for Specific Stock</h2>
+            <div class="form-row">
+                <label for="symbol">Stock Symbol:</label>
+                <select name="symbol" id="symbol" style="padding: 8px; min-width: 200px;">
+                    <option value="">-- All Stocks --</option>
+                    {% for stock in stocks %}
+                    <option value="{{ stock.stock_symbol }}">{{ stock.stock_symbol }} - {{ stock.stock_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </fieldset>
+        
+        <div class="submit-row" style="margin-top: 20px;">
+            <input type="submit" value="Fetch News" class="default" style="padding: 10px 20px;">
+            <a href="{% url 'admin:stock_stocknews_changelist' %}" class="button" style="padding: 10px 20px; margin-left: 10px;">Cancel</a>
+        </div>
+    </form>
+    
+    <div style="margin-top: 30px; padding: 15px; background-color: #fff3cd; border-radius: 5px;">
+        <h4>Note</h4>
+        <ul>
+            <li>Select a specific stock to fetch news for that stock only.</li>
+            <li>Leave empty to fetch news for all stocks in database.</li>
+            <li>Only the top 15 news items are saved per stock.</li>
+            <li>Existing news items are updated if the link already exists.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getCSRFToken } from "../utils/csrf";
+import { ENDPOINTS } from "../api/config";
 
 const WatchlistContext = createContext(null);
 
@@ -24,7 +25,7 @@ export function WatchlistProvider({ children }) {
 
     async function load() {
       try {
-        const res = await fetch("/api/core/watchlist/", {
+        const res = await fetch(ENDPOINTS.WATCHLIST, {
           credentials: "include",
         });
 
@@ -63,7 +64,7 @@ export function WatchlistProvider({ children }) {
     const sym = normalize(symbol);
     if (!sym) return;
 
-    const res = await fetch("/api/core/watchlist/", {
+    const res = await fetch(ENDPOINTS.WATCHLIST, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -92,7 +93,7 @@ export function WatchlistProvider({ children }) {
     const sym = normalize(symbol);
     if (!sym) return;
 
-    const res = await fetch("/api/core/watchlist/", {
+    const res = await fetch(ENDPOINTS.WATCHLIST, {
       method: "DELETE",
       credentials: "include",
       headers: {

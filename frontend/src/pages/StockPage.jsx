@@ -10,10 +10,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import TradingViewChart from "../components/TradingviewChart.jsx";
-import RightSidebar from "../components/RightSidebar.jsx";
+import TradingViewChart from "../components/charts/TradingviewChart.jsx";
+import RightSidebar from "../components/common/RightSidebar.jsx";
 import "../styles/layout.css";
-import NewsPanel from "../components/NewsPanel.jsx";
+import NewsPanel from "../components/news/NewsPanel.jsx";
 import { useWatchlist } from "../context/WatchlistContext";
 
 const TRENDING = ["NVDA", "AVGO", "PLTR", "META", "AMD", "TSLA", "AMZN"];

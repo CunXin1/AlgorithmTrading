@@ -1,12 +1,17 @@
 # finance/urls.py
 from django.urls import path
-from .views import stock_intraday_view, current_price_view
+from . import views
+
+app_name = "finance"
 
 urlpatterns = [
-    # 1. 当前价格（必须放前面，否则被下面的 <symbol> 抢匹配）
-    path("currentprice/<str:symbol>/", current_price_view, name="current-price"),
+    # Stock Data
+    path("api/stocks/currentprice/<str:symbol>/", views.current_price_view, name="current-price"),
+    path("api/stocks/<str:symbol>/", views.stock_intraday_view, name="stock-intraday"),
 
-    # 2. 分钟级 K 线数据
-    path("<str:symbol>/", stock_intraday_view, name="stock-intraday"),
+    # Watchlist
+    path("api/stocks/watchlist/", views.watchlist_api, name="watchlist"),
+
+    # Portfolio
+    path("api/stocks/portfolios/<int:portfolio_id>/", views.portfolio_detail_api, name="portfolio-detail"),
 ]
-

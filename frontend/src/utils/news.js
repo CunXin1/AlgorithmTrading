@@ -1,8 +1,7 @@
+import { ENDPOINTS } from "../api/config";
+
 export async function fetchGoogleNews(symbol) {
-  const res = await fetch(
-    `/api/news/google/?symbol=${encodeURIComponent(symbol)}`,
-    { cache: "no-store" }
-  );
+  const res = await fetch(ENDPOINTS.GOOGLE_NEWS(symbol), { cache: "no-store" });
 
   if (!res.ok) {
     throw new Error("Failed to fetch news");

@@ -1,9 +1,10 @@
 // src/pages/MarketSentimentPage.jsx
 import { useEffect, useMemo, useState } from "react";
-import ChartComponent from "../components/ChartComponent";
+import ChartComponent from "../components/charts/ChartComponent";
 import "../styles/MarketSentimentPage.css";
 import { normalizeRating, getSentimentClass, formatScore } from "../utils/sentimentUtils";
-import useEmailSubscriptions from "../utils/emailsubscriptions.js";
+import useEmailSubscriptions from "../hooks/useEmailSubscriptions.js";
+import { ENDPOINTS } from "../api/config";
 
 
 
@@ -82,7 +83,7 @@ export default function MarketSentimentPage() {
         let cancelled = false;
         setError("");
 
-        fetchJSON(`/api/sentiment/index/${CORE_INDEX}/history/?days=${rangeDays}`)
+        fetchJSON(ENDPOINTS.SENTIMENT_HISTORY(CORE_INDEX, rangeDays))
             .then((data) => {
                 if (!cancelled) setFgSeries(Array.isArray(data) ? data : []);
             })
@@ -104,7 +105,7 @@ export default function MarketSentimentPage() {
             try {
                 const results = await Promise.all(
                     OTHER_INDEXES.map((idx) =>
-                        fetchJSON(`/api/sentiment/index/${idx}/history/?days=365`).then((data) => [
+                        fetchJSON(ENDPOINTS.SENTIMENT_HISTORY(idx, 365)).then((data) => [
                             idx,
                             Array.isArray(data) ? data : [],
                         ])
@@ -219,7 +220,6 @@ export default function MarketSentimentPage() {
                 {/* ===== Email Alert Section ===== */}
                 <div className="ms-email-section">
                     
-
 
                     <div className="ms-email-header">
                         <h2 className="ms-email-title">Email Subscriptions</h2>

@@ -36,3 +36,15 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* 全局输入框样式 */
+input,
+textarea,
+select {
+  color: #202124;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
+}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ENDPOINTS } from "../../api/config";
 
 /* =========================
    Utils: forward-fill prices
@@ -278,7 +279,7 @@ function MarketCard({ symbol, name }) {
 
     useEffect(() => {
         let cancelled = false;
-        fetch(`/api/stocks/${symbol.toLowerCase()}/`)
+        fetch(ENDPOINTS.STOCKS(symbol.toLowerCase()))
             .then(r => r.json())
             .then(j => !cancelled && setData(j.data || []))
             .finally(() => !cancelled && setLoading(false));

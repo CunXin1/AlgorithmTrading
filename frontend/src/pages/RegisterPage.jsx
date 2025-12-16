@@ -1,17 +1,84 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../styles/registerpage.css";
+import { ENDPOINTS } from "../api/config";
+import { getCSRFToken } from "../utils/csrf";
 
+const DEFAULT_AVATAR = "/assets/defaultprofile.png";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [code, setCode] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState(DEFAULT_AVATAR);
+  const [avatarBase64, setAvatarBase64] = useState("");
+  const fileInputRef = useRef(null);
 
   const [sending, setSending] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [error, setError] = useState("");
+
+  /* -----------------------------
+     Fetch CSRF token on mount
+     ----------------------------- */
+  useEffect(() => {
+    fetch(ENDPOINTS.CSRF, { credentials: "include" }).catch(() => {});
+  }, []);
+
+  /* -----------------------------
+     Handle avatar upload
+     ----------------------------- */
+  function handleAvatarClick() {
+    fileInputRef.current?.click();
+  }
+
+  function handleAvatarChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size must be less than 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Resize to 128x128
+        const canvas = document.createElement("canvas");
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext("2d");
+
+        // Calculate crop to make it square
+        const size = Math.min(img.width, img.height);
+        const x = (img.width - size) / 2;
+        const y = (img.height - size) / 2;
+
+        ctx.drawImage(img, x, y, size, size, 0, 0, 128, 128);
+
+        // Get Base64 without data URI prefix
+        const dataUrl = canvas.toDataURL("image/png");
+        const base64 = dataUrl.replace(/^data:image\/png;base64,/, "");
+
+        setAvatarPreview(dataUrl);
+        setAvatarBase64(base64);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
 
   /* -----------------------------
      Password validation
@@ -44,9 +111,13 @@ export default function RegisterPage() {
 
     setSending(true);
     try {
-      const res = await fetchJSON(`/api/auth/send-code/`, {
+      const csrfToken = getCSRFToken();
+      const res = await fetch(ENDPOINTS.AUTH_SEND_CODE, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfToken && { "X-CSRFToken": csrfToken }),
+        },
         credentials: "include",
         body: JSON.stringify({ email }),
       });
@@ -85,16 +156,23 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await fetchJSON(`/api/auth/register/`, {
+      const csrfToken = getCSRFToken();
+      const res = await fetch(ENDPOINTS.AUTH_REGISTER, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfToken && { "X-CSRFToken": csrfToken }),
+        },
         credentials: "include",
         body: JSON.stringify({
           email,
           username,
+          first_name: firstName,
+          last_name: lastName,
           password,
           confirm_password: confirm,
           code,
+          avatar: avatarBase64,
         }),
       });
 
@@ -102,7 +180,7 @@ export default function RegisterPage() {
       if (!res.ok) throw new Error(data.error || "Register failed");
 
       // ✅ 注册成功 → Dashboard
-      window.location.href = `/dashboard/${username}`;
+      window.location.href = "/dashboard";
     } catch (e) {
       setError(e.message);
     }
@@ -113,6 +191,40 @@ export default function RegisterPage() {
       <form className="auth-card" onSubmit={handleRegister}>
         <h1 className="auth-title">Create account</h1>
         <p className="auth-subtitle">AlgorithmTrading</p>
+
+        {/* Avatar upload */}
+        <div className="avatar-upload" onClick={handleAvatarClick}>
+          <img
+            src={avatarPreview}
+            alt="Avatar"
+            className="avatar-preview"
+          />
+          <div className="avatar-overlay">
+            <span>📷</span>
+          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleAvatarChange}
+            accept="image/*"
+            style={{ display: "none" }}
+          />
+        </div>
+
+        <div className="name-row">
+          <input
+            className="auth-input"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <input
+            className="auth-input"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+        </div>
 
         <input
           className="auth-input"

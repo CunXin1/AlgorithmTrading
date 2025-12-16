@@ -9,6 +9,8 @@ import "../styles/myportfolio.css";
 import { useRef } from "react";
 
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import TradingViewChart from "../components/charts/TradingviewChart.jsx";
+import { API_BASE, ENDPOINTS } from "../api/config";
 
 const DEFAULT_P1 = ["AAPL", "GOOGL", "NVDA"];
 const DEFAULT_P2 = ["TSLA", "PLTR", "AMD"];
@@ -110,7 +112,7 @@ export default function MyPortfolioPage() {
      ------------------------------ */
   useEffect(() => {
     async function loadProfile() {
-      const res = await fetch(`/api/core/profile/`, {
+      const res = await fetch(ENDPOINTS.PROFILE, {
         credentials: "include",
       });
 
@@ -130,9 +132,8 @@ export default function MyPortfolioPage() {
       setUsername(data.username);
 
       setAvatar(
-        data.avatar ? data.avatar : "/assets/defaultprofile.png"
+        data.avatar ? `${API_BASE}${data.avatar}` : "/assets/defaultprofile.png"
       );
-
 
       const p1 =
         data.portfolio1 && Array.isArray(data.portfolio1.holdings)
@@ -203,7 +204,7 @@ export default function MyPortfolioPage() {
       const map = {};
       for (const sym of uniq) {
         try {
-          const res = await fetch(`/api/currentprice/${sym}/`, {
+          const res = await fetch(ENDPOINTS.CURRENT_PRICE(sym), {
             credentials: "include",
           });
           if (res.ok) map[sym] = await res.json();
@@ -256,7 +257,7 @@ export default function MyPortfolioPage() {
     }
 
     saveTimerRef.current = setTimeout(() => {
-      fetch(`/api/core/profile/`, {
+      fetch(ENDPOINTS.PROFILE, {
         method: "PATCH",
         credentials: "include",
         headers: {

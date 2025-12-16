@@ -8,7 +8,7 @@
 // ------------------------------------------------------------
 
 import React from "react";
-import Navbar from "./components/Navbar.jsx";
+import Navbar from "./components/common/Navbar.jsx";
 import HomePage from "./pages/HomePage.jsx";
 
 import LoginPage from "./pages/LoginPage.jsx";
@@ -44,7 +44,7 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/stock/:symbol" element={<StockPage />} />
-            <Route path="/dashboard/:username" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
 
             <Route path="/news" element={<NewsPage />} />
             <Route path="/news/:symbol" element={<NewsStockPage />} />
