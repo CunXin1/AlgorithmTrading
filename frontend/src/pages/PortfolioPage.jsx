@@ -43,7 +43,7 @@ export default function PortfolioPage() {
 
   return (
     <div className="portfolio-page">
-      <h2>Famous Portfolios 名人持仓</h2>
+      <h2>Famous Portfolios</h2>
       <p className="subtitle">
         Compare how top investors allocate capital.
       </p>
@@ -131,7 +131,7 @@ export default function PortfolioPage() {
 
       {/* Your portfolio */}
       <div className="your-portfolio">
-        <h2>Your Portfolio 你的投资组合</h2>
+        <h2>Your Portfolio</h2>
         <p>Build and track your own portfolio in a dedicated page.</p>
         <button
           className="primary-btn"

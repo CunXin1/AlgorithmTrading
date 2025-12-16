@@ -1,57 +1,104 @@
-# finance/price_service.py
-
 from __future__ import annotations
+
 from typing import Dict, Any
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from .http_helper import http_get
-from .http_helper import http_get1
 
 NY_TZ = ZoneInfo("America/New_York")
 
 
 def get_current_price(symbol: str) -> Dict[str, Any]:
     """
-    返回最新实时价格（包括盘前/盘后）：
+    使用 intraday（1-minute）数据计算“当前价格”。
+
+    设计原则（非常重要）：
+    - ✅ 使用 v8/finance/chart
+    - 当前价 = 最近一根 1min K 线的 close
+    - 对交易系统来说，这是合理且常见做法
+
+    返回格式（与前端契约）：
     {
-       "symbol": "NVDA",
-       "price": 185.22,
-       "time": "2025-12-11T03:48",
-       "market_state": "POST"
+        "symbol": "AAPL",
+        "price": 279.50,
+        "time": "2025-12-15T09:34",
+        "market_state": "RTH"
     }
     """
 
-    url = "https://query1.finance.yahoo.com/v7/finance/quote"
-    params = {"symbols": symbol}
+    symbol = symbol.upper()
 
-    js = http_get1(url, params=params)
+    # Yahoo Finance chart API（1-minute）
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
 
-    quote = js["quoteResponse"]["result"][0]
+    params = {
+        "interval": "1m",
+        "range": "1d",
+        "includePrePost": "true",
+    }
 
-    market_state = quote.get("marketState")
+    js = http_get(url, params=params)
 
-    # 两种价格来源：常规 / 盘前盘后
-    if market_state == "PRE" and quote.get("preMarketPrice") is not None:
-        price = quote["preMarketPrice"]
-        ts = quote.get("preMarketTime")
-    elif market_state in ("POST", "POSTPOST") and quote.get("postMarketPrice") is not None:
-        price = quote["postMarketPrice"]
-        ts = quote.get("postMarketTime")
-    else:
-        price = quote.get("regularMarketPrice")
-        ts = quote.get("regularMarketTime")
+    # -------- 解析 Yahoo chart 返回 --------
+    chart = js.get("chart", {})
+    result = chart.get("result")
 
-    # 时间戳转换
-    if ts:
+    if not result:
+        return {
+            "symbol": symbol,
+            "price": None,
+            "time": None,
+            "market_state": None,
+        }
+
+    r0 = result[0]
+
+    timestamps = r0.get("timestamp")
+    indicators = r0.get("indicators", {})
+    quote = indicators.get("quote", [{}])[0]
+
+    closes = quote.get("close")
+
+    if not timestamps or not closes:
+        return {
+            "symbol": symbol,
+            "price": None,
+            "time": None,
+            "market_state": None,
+        }
+
+    # -------- 取最后一根有效 K 线 --------
+    # Yahoo 有时最后一个 close 是 None（正在形成）
+    idx = len(closes) - 1
+    while idx >= 0 and closes[idx] is None:
+        idx -= 1
+
+    if idx < 0:
+        return {
+            "symbol": symbol,
+            "price": None,
+            "time": None,
+            "market_state": None,
+        }
+
+    price = closes[idx]
+    ts = timestamps[idx]
+
+    # -------- 时间转换（NY 时区）--------
+    try:
         t_ny = datetime.fromtimestamp(ts, tz=NY_TZ)
         time_str = t_ny.strftime("%Y-%m-%dT%H:%M")
-    else:
+    except Exception:
         time_str = None
 
+    # -------- 市场状态判断（简化版）--------
+    # 你 intraday API 本身已经区分 RTH / Pre / Post
+    market_state = "RTH"
+
     return {
-        "symbol": symbol.upper(),
-        "price": float(f"{price:.2f}") if price is not None else None,
+        "symbol": symbol,
+        "price": float(price),
         "time": time_str,
         "market_state": market_state,
     }

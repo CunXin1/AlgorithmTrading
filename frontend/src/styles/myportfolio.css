@@ -1,0 +1,227 @@
+/* ================================
+   Page container
+   ================================ */
+.myportfolio-page {
+  max-width: 1280px;
+  margin: 0 auto;
+
+  padding-top: 80px;
+  background: #f8f9fa; /* Google page gray */
+}
+
+/* ================================
+   Header
+   ================================ */
+.mp-header {
+  margin-bottom: 32px;
+}
+
+.mp-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #202124;
+  margin: 0;
+}
+
+.mp-header p {
+  margin-top: 6px;
+  color: #5f6368;
+  font-size: 14px;
+}
+
+/* ================================
+   Main layout
+   ================================ */
+.mp-main {
+  display: grid;
+  grid-template-columns: 60% 1fr;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+/* ================================
+   Portfolio column
+   ================================ */
+.mp-portfolios {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ================================
+   Portfolio card
+   ================================ */
+.portfolio-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.08);
+}
+
+/* Inner left-right layout */
+.portfolio-inner {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+/* ================================
+   Donut area
+   ================================ */
+.portfolio-donut {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ================================
+   Right control area
+   ================================ */
+.portfolio-right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Portfolio name */
+.portfolio-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #202124;
+  border: none;
+  border-bottom: 1px solid #dadce0;
+  padding: 4px 2px;
+  margin-bottom: 12px;
+  outline: none;
+}
+
+.portfolio-name:focus {
+  border-bottom-color: #1a73e8;
+}
+
+/* ================================
+   Search / Add row
+   ================================ */
+.portfolio-search {
+  display: grid;
+  grid-template-columns: 1fr 100px 80px;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.symbol-input,
+.shares-input {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #dadce0;
+  outline: none;
+}
+
+.symbol-input:focus,
+.shares-input:focus {
+  border-color: #1a73e8;
+}
+
+/* Add button */
+.portfolio-search button {
+  background: #1a73e8;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.portfolio-search button:hover {
+  background: #185abc;
+}
+
+/* ================================
+   Holdings list
+   ================================ */
+.holdings {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+}
+
+.holdings li {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1fr 1fr;
+  gap: 8px;
+  padding: 8px 6px;
+  font-size: 14px;
+  color: #202124;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.holdings li:hover {
+  background: #f1f3f4;
+}
+
+.holdings span {
+  white-space: nowrap;
+}
+
+/* ================================
+   Watchlist column
+   (NO outer card – component handles itself)
+   ================================ */
+.mp-watchlist {
+  margin-top: 4px;
+}
+
+/* ================================
+   Divider
+   ================================ */
+.mp-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 40px 0;
+}
+
+/* ================================
+   TradingView section
+   ================================ */
+.mp-tv-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.mp-tv-card {
+  width: 60%;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.08);
+  padding: 12px;
+  height: 520px;
+}
+
+/* TradingView iframe/container should fill */
+.mp-tv-card .tv-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ================================
+   Responsive
+   ================================ */
+@media (max-width: 1100px) {
+  .mp-main {
+    grid-template-columns: 1fr;
+  }
+
+  .mp-tv-card {
+    width: 100%;
+  }
+
+  .portfolio-inner {
+    grid-template-columns: 1fr;
+  }
+}
