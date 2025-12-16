@@ -155,12 +155,19 @@ SIMPLE_JWT = {
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "http://www.algorithmtrading.net",
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+CORS_ALLOWED_ORIGINS = [
+    "http://www.algorithmtrading.net",
+]
+
 
 # ========================
 # Email (SMTP - Gmail)
