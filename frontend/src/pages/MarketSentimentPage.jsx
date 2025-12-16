@@ -6,21 +6,6 @@ import { normalizeRating, getSentimentClass, formatScore } from "../utils/sentim
 import useEmailSubscriptions from "../hooks/useEmailSubscriptions.js";
 import { ENDPOINTS } from "../api/config";
 
-
-
-
-function getCSRFToken() {
-    const name = "csrftoken=";
-    const cookies = document.cookie.split(";");
-    for (let c of cookies) {
-        c = c.trim();
-        if (c.startsWith(name)) {
-            return c.slice(name.length);
-        }
-    }
-    return "";
-}
-
 const CORE_INDEX = "fear_and_greed";
 
 const OTHER_INDEXES = [

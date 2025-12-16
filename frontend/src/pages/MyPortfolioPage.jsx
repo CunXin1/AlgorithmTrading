@@ -1,12 +1,14 @@
 // ------------------------------------------------------------
 // MyPortfolioPage.jsx
-// Route: /:username/myportfolio
 // ------------------------------------------------------------
-import { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+// User portfolio management page
+// Protected by ProtectedRoute in App.jsx
+// ------------------------------------------------------------
+
+import { useEffect, useMemo, useState, useRef } from "react";
+import { getCSRFToken } from "../utils/csrf";
 import WatchlistCard from "../components/dashboard/WatchlistCard";
 import "../styles/myportfolio.css";
-import { useRef } from "react";
 
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 import TradingViewChart from "../components/charts/TradingviewChart.jsx";
@@ -38,7 +40,7 @@ function ExternalTooltip({ active, payload }) {
   );
 }
 
-// ---------------- Donut (严格按你提供的结构，删 logo 部分) ----------------
+// ---------------- Donut Chart ----------------
 function PortfolioDonutChart({ data, avatar }) {
   return (
     <div className="donut-wrapper">
@@ -62,7 +64,7 @@ function PortfolioDonutChart({ data, avatar }) {
         <Tooltip content={<ExternalTooltip />} wrapperStyle={{ zIndex: 999 }} />
       </PieChart>
 
-      {/* 中心头像 */}
+      {/* Center avatar */}
       <img src={avatar} alt="avatar" className="donut-avatar" />
     </div>
   );
@@ -83,12 +85,7 @@ function fmtMoney(x) {
 }
 
 export default function MyPortfolioPage() {
-  const { username: routeUsername } = useParams();
-  const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
-
-  const [username, setUsername] = useState("");
   const [avatar, setAvatar] = useState("/assets/defaultprofile.png");
 
   const [portfolio1, setPortfolio1] = useState(null);
@@ -97,13 +94,12 @@ export default function MyPortfolioPage() {
   const [priceMap, setPriceMap] = useState({});
   const [tvSymbol, setTvSymbol] = useState("AAPL");
 
-  // portfolio 右侧第一大排输入框
+  // Portfolio input fields
   const [p1Sym, setP1Sym] = useState("");
   const [p1Qty, setP1Qty] = useState("");
   const [p2Sym, setP2Sym] = useState("");
   const [p2Qty, setP2Qty] = useState("");
   const [hydrated, setHydrated] = useState(false);
-
 
   const saveTimerRef = useRef(null);
 
@@ -112,84 +108,69 @@ export default function MyPortfolioPage() {
      ------------------------------ */
   useEffect(() => {
     async function loadProfile() {
-      const res = await fetch(ENDPOINTS.PROFILE, {
-        credentials: "include",
-      });
+      try {
+        const res = await fetch(ENDPOINTS.PROFILE, {
+          credentials: "include",
+        });
 
-      if (!res.ok) {
-        navigate("/login");
-        return;
+        if (!res.ok) {
+          return;
+        }
+
+        const data = await res.json();
+
+        setAvatar(
+          data.avatar ? `${API_BASE}${data.avatar}` : "/assets/defaultprofile.png"
+        );
+
+        const p1 =
+          data.portfolio1 && Array.isArray(data.portfolio1.holdings)
+            ? data.portfolio1
+            : null;
+        const p2 =
+          data.portfolio2 && Array.isArray(data.portfolio2.holdings)
+            ? data.portfolio2
+            : null;
+
+        const initP1 =
+          p1 && p1.holdings.length
+            ? p1
+            : {
+              name: (p1 && p1.name) || "Portfolio 1",
+              holdings: DEFAULT_P1.map((s) => ({
+                symbol: s,
+                shares: 1,
+                buy_price: null,
+              })),
+            };
+
+        const initP2 =
+          p2 && p2.holdings.length
+            ? p2
+            : {
+              name: (p2 && p2.name) || "Portfolio 2",
+              holdings: DEFAULT_P2.map((s) => ({
+                symbol: s,
+                shares: 1,
+                buy_price: null,
+              })),
+            };
+
+        setPortfolio1(initP1);
+        setPortfolio2(initP2);
+        setTvSymbol(initP1.holdings[0]?.symbol || "AAPL");
+        setLoading(false);
+        setHydrated(true);
+      } catch {
+        // Handle error silently - ProtectedRoute handles auth
       }
-
-      const data = await res.json();
-
-      // 路由用户名不一致就跳回正确路由（你想要更严可去 403）
-      if (routeUsername && data.username && routeUsername !== data.username) {
-        navigate(`/${data.username}/myportfolio`);
-        return;
-      }
-
-      setUsername(data.username);
-
-      setAvatar(
-        data.avatar ? `${API_BASE}${data.avatar}` : "/assets/defaultprofile.png"
-      );
-
-      const p1 =
-        data.portfolio1 && Array.isArray(data.portfolio1.holdings)
-          ? data.portfolio1
-          : null;
-      const p2 =
-        data.portfolio2 && Array.isArray(data.portfolio2.holdings)
-          ? data.portfolio2
-          : null;
-
-      const initP1 =
-        p1 && p1.holdings.length
-          ? p1
-          : {
-            name: (p1 && p1.name) || "Portfolio 1",
-            holdings: DEFAULT_P1.map((s) => ({
-              symbol: s,
-              shares: 1,
-              buy_price: null,
-            })),
-          };
-
-      const initP2 =
-        p2 && p2.holdings.length
-          ? p2
-          : {
-            name: (p2 && p2.name) || "Portfolio 2",
-            holdings: DEFAULT_P2.map((s) => ({
-              symbol: s,
-              shares: 1,
-              buy_price: null,
-            })),
-          };
-
-      setPortfolio1(initP1);
-      setPortfolio2(initP2);
-
-      setTvSymbol(initP1.holdings[0]?.symbol || "AAPL");
-      setLoading(false);
-
-      setPortfolio1(initP1);
-      setPortfolio2(initP2);
-
-      setTvSymbol(initP1.holdings[0]?.symbol || "AAPL");
-
-      setLoading(false);
-      setHydrated(true); // ✅ 非常关键：数据已从后端 hydrate 完成
-
     }
 
     loadProfile();
-  }, [routeUsername, navigate]);
+  }, []);
 
   /* ------------------------------
      Fetch prices once on enter
-     API: /api/currentprice/<symbol>/
      ------------------------------ */
   useEffect(() => {
     if (!portfolio1 || !portfolio2) return;
@@ -208,7 +189,9 @@ export default function MyPortfolioPage() {
             credentials: "include",
           });
           if (res.ok) map[sym] = await res.json();
-        } catch { }
+        } catch {
+          // Silently ignore price fetch errors
+        }
       }
       setPriceMap(map);
     }
@@ -217,7 +200,7 @@ export default function MyPortfolioPage() {
   }, [portfolio1, portfolio2]);
 
   /* ------------------------------
-     Fill missing buy_price using current price (once prices arrive)
+     Fill missing buy_price using current price
      ------------------------------ */
   useEffect(() => {
     if (!portfolio1 || !portfolio2) return;
@@ -244,31 +227,32 @@ export default function MyPortfolioPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceMap]);
 
-
-  /* */
+  /* ------------------------------
+     Auto-save portfolios (debounced)
+     ------------------------------ */
   useEffect(() => {
-    // ⛔️ 防止首次加载（hydrate）时立刻 PATCH
     if (!hydrated) return;
     if (!portfolio1 || !portfolio2) return;
 
-    // debounce：500ms 内多次修改只保存一次
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
     }
 
     saveTimerRef.current = setTimeout(() => {
+      const csrfToken = getCSRFToken();
       fetch(ENDPOINTS.PROFILE, {
         method: "PATCH",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          ...(csrfToken && { "X-CSRFToken": csrfToken }),
         },
         body: JSON.stringify({
           portfolio1,
           portfolio2,
         }),
       }).catch(() => {
-        // 静默失败即可；需要的话你以后可以加 toast
+        // Silently handle save errors
       });
     }, 500);
 
@@ -278,8 +262,6 @@ export default function MyPortfolioPage() {
       }
     };
   }, [hydrated, portfolio1, portfolio2]);
-
-
 
   /* ------------------------------
      Helpers
@@ -303,7 +285,6 @@ export default function MyPortfolioPage() {
     }));
   }
 
-  // 第二大排：Add（按输入 sym/qty）
   function addHolding(pf, setPf, symInput, qtyInput) {
     const sym = normalizeSymbol(symInput);
     const qty = parseQty(qtyInput);
@@ -318,7 +299,6 @@ export default function MyPortfolioPage() {
       const oldShares = Number(old.shares) || 0;
       const newShares = oldShares + qty;
 
-      // buy_price 加权平均：old_buy*oldShares + cur*qty
       let newBuy = old.buy_price;
       if (typeof cur === "number") {
         const oldBuy = typeof old.buy_price === "number" ? old.buy_price : cur;
@@ -344,7 +324,6 @@ export default function MyPortfolioPage() {
     }
   }
 
-  // 第二大排：Remove（按输入 sym/qty，减到<=0就删）
   function removeHolding(pf, setPf, symInput, qtyInput) {
     const sym = normalizeSymbol(symInput);
     const qty = parseQty(qtyInput);
@@ -370,7 +349,6 @@ export default function MyPortfolioPage() {
     setPf({ ...pf, holdings: next });
   }
 
-  // 第三大排：X 删除整只
   function deleteHolding(pf, setPf, sym) {
     const s = normalizeSymbol(sym);
     setPf({
@@ -379,15 +357,18 @@ export default function MyPortfolioPage() {
     });
   }
 
-  const p1Donut = useMemo(() => (portfolio1 ? buildDonutData(portfolio1) : []), [
-    portfolio1,
-    priceMap,
-  ]);
-  const p2Donut = useMemo(() => (portfolio2 ? buildDonutData(portfolio2) : []), [
-    portfolio2,
-    priceMap,
-  ]);
+  const p1Donut = useMemo(
+    () => (portfolio1 ? buildDonutData(portfolio1) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [portfolio1, priceMap]
+  );
+  const p2Donut = useMemo(
+    () => (portfolio2 ? buildDonutData(portfolio2) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [portfolio2, priceMap]
+  );
 
+  // Show nothing while loading
   if (loading || !portfolio1 || !portfolio2) return null;
 
   return (
@@ -413,7 +394,6 @@ export default function MyPortfolioPage() {
                   onChange={(e) => setPortfolio1({ ...portfolio1, name: e.target.value })}
                 />
 
-                {/* 第一大排：两个输入框 */}
                 <div className="pf-input-row">
                   <input
                     className="symbol-input"
@@ -430,7 +410,6 @@ export default function MyPortfolioPage() {
                   />
                 </div>
 
-                {/* 第二大排：Add / Remove（只在这里保留） */}
                 <div className="pf-action-row">
                   <button
                     className="btn primary"
@@ -446,7 +425,6 @@ export default function MyPortfolioPage() {
                   </button>
                 </div>
 
-                {/* 第三大排：股票表格（滚动） */}
                 <div className="pf-table">
                   {portfolio1.holdings.map((h) => {
                     const sym = normalizeSymbol(h.symbol);
@@ -457,7 +435,6 @@ export default function MyPortfolioPage() {
 
                     return (
                       <div className="pf-row" key={sym}>
-                        {/* 行1：symbol + shares + X */}
                         <div className="pf-row-top" onClick={() => setTvSymbol(sym)}>
                           <div className="pf-row-left">
                             <span className="pf-sym">{sym}</span>
@@ -477,7 +454,6 @@ export default function MyPortfolioPage() {
                           </button>
                         </div>
 
-                        {/* 行3：4字段 */}
                         <div className="pf-row-info">
                           <div className="cell">
                             <div className="k">Shares</div>
@@ -606,7 +582,7 @@ export default function MyPortfolioPage() {
           </div>
         </div>
 
-        {/* 右侧 Watchlist（不额外套卡片；右列变窄由 CSS 控制） */}
+        {/* Right side Watchlist */}
         <div className="mp-watchlist-slot">
           <WatchlistCard onSelect={(s) => setTvSymbol(normalizeSymbol(s))} />
         </div>

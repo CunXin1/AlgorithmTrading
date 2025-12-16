@@ -9,7 +9,8 @@ import io
 import base64
 import zipfile
 
-from .models import Stock, WatchList
+from .models import Stock, WatchList, StockNews
+from .services import fetch_and_save_stock_news, fetch_and_save_query_news
 
 
 class ZipImportForm(forms.Form):
@@ -232,3 +233,110 @@ class WatchListAdmin(admin.ModelAdmin):
     def stock_count(self, obj):
         return obj.stocks.count()
     stock_count.short_description = "Stocks"
+
+
+class FetchNewsForm(forms.Form):
+    """Form for fetching news."""
+    query = forms.CharField(
+        label="Stock Symbol or Search Query",
+        help_text="Enter a stock symbol (e.g., AAPL) or a general query (e.g., 'Federal Reserve')",
+        max_length=255
+    )
+    is_stock = forms.BooleanField(
+        label="Is Stock Symbol",
+        required=False,
+        initial=True,
+        help_text="Check if the query is a stock symbol"
+    )
+
+
+@admin.register(StockNews)
+class StockNewsAdmin(admin.ModelAdmin):
+    list_display = ('short_title', 'stock_symbol_display', 'query', 'pub_date', 'created_at', 'link_preview')
+    list_filter = ('stock', 'pub_date', 'created_at')
+    search_fields = ('title', 'description', 'stock__stock_symbol', 'query')
+    ordering = ('-pub_date', '-created_at')
+    readonly_fields = ('created_at',)
+    date_hierarchy = 'pub_date'
+    list_per_page = 50
+    
+    fieldsets = (
+        ('News Info', {
+            'fields': ('title', 'link', 'description')
+        }),
+        ('Association', {
+            'fields': ('stock', 'query')
+        }),
+        ('Dates', {
+            'fields': ('pub_date', 'created_at')
+        }),
+    )
+    
+    change_list_template = "admin/stock/stocknews_changelist.html"
+    
+    def short_title(self, obj):
+        """Display truncated title."""
+        if len(obj.title) > 60:
+            return obj.title[:60] + "..."
+        return obj.title
+    short_title.short_description = "Title"
+    
+    def stock_symbol_display(self, obj):
+        """Display stock symbol if available."""
+        if obj.stock:
+            return obj.stock.stock_symbol
+        return "-"
+    stock_symbol_display.short_description = "Stock"
+    
+    def link_preview(self, obj):
+        """Display clickable link."""
+        if obj.link:
+            return format_html(
+                '<a href="{}" target="_blank" title="{}">Open ↗</a>',
+                obj.link,
+                obj.link
+            )
+        return "-"
+    link_preview.short_description = "Link"
+    
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('fetch-news/', self.admin_site.admin_view(self.fetch_news_view), name='stock_stocknews_fetch'),
+        ]
+        return custom_urls + urls
+    
+    def fetch_news_view(self, request):
+        """Handle news fetching from admin."""
+        if request.method == "POST":
+            form = FetchNewsForm(request.POST)
+            if form.is_valid():
+                query = form.cleaned_data['query'].strip()
+                is_stock = form.cleaned_data['is_stock']
+                
+                try:
+                    if is_stock:
+                        news_items = fetch_and_save_stock_news(query.upper())
+                        messages.success(
+                            request, 
+                            f"Successfully fetched {len(news_items)} news items for stock {query.upper()}"
+                        )
+                    else:
+                        news_items = fetch_and_save_query_news(query)
+                        messages.success(
+                            request, 
+                            f"Successfully fetched {len(news_items)} news items for query '{query}'"
+                        )
+                except Exception as e:
+                    messages.error(request, f"Error fetching news: {str(e)}")
+                
+                return redirect("..")
+        else:
+            form = FetchNewsForm()
+        
+        context = {
+            'form': form,
+            'title': 'Fetch News from Google RSS',
+            'opts': self.model._meta,
+        }
+        return render(request, "admin/stock/fetch_news.html", context)

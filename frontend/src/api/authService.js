@@ -2,7 +2,8 @@
 // authService.js
 // ------------------------------------------------------------
 // Frontend auth API layer
-// 所有和「认证 / 用户」相关的 HTTP 请求都集中在这里
+// All authentication-related HTTP requests are centralized here
+// Uses session-based auth (Django session cookies)
 // ------------------------------------------------------------
 
 import { ENDPOINTS } from "./config";
@@ -45,9 +46,12 @@ export async function sendCode(email) {
 export async function register({
   email,
   username,
+  firstName,
+  lastName,
   password,
   confirmPassword,
   code,
+  avatar,
 }) {
   const csrfToken = getCSRFToken();
   const res = await fetch(ENDPOINTS.AUTH_REGISTER, {
@@ -56,13 +60,16 @@ export async function register({
       "Content-Type": "application/json",
       ...(csrfToken && { "X-CSRFToken": csrfToken }),
     },
-    credentials: "include", // ⭐ 允许 Django login() 写 session
+    credentials: "include",
     body: JSON.stringify({
       email,
       username,
+      first_name: firstName,
+      last_name: lastName,
       password,
       confirm_password: confirmPassword,
       code,
+      avatar,
     }),
   });
 
@@ -86,7 +93,7 @@ export async function login(email, password) {
       "Content-Type": "application/json",
       ...(csrfToken && { "X-CSRFToken": csrfToken }),
     },
-    credentials: "include", // ⭐ 用 session / JWT 都兼容
+    credentials: "include",
     body: JSON.stringify({ email, password }),
   });
 
@@ -96,11 +103,6 @@ export async function login(email, password) {
     throw new Error(data.error || "Login failed");
   }
 
-  // 如果你后面用 JWT，可以存在 localStorage
-  if (data.token) {
-    localStorage.setItem("auth_token", data.token);
-  }
-
   return data;
 }
 
@@ -108,10 +110,6 @@ export async function login(email, password) {
    Logout
    ========================= */
 export async function logout() {
-  // 1️⃣ 清本地 token
-  localStorage.removeItem("auth_token");
-
-  // 2️⃣ 通知后端（如果你实现了 /logout/）
   try {
     const csrfToken = getCSRFToken();
     await fetch(ENDPOINTS.AUTH_LOGOUT, {
@@ -122,12 +120,12 @@ export async function logout() {
       credentials: "include",
     });
   } catch {
-    // 后端没实现也没关系
+    // Silently handle logout errors
   }
 }
 
 /* =========================
-   Get current user (optional)
+   Get current user
    ========================= */
 export async function getMe() {
   const res = await fetch(ENDPOINTS.AUTH_ME, {

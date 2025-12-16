@@ -38,8 +38,10 @@ export const ENDPOINTS = {
   CURRENT_PRICE: (symbol) => `${API_BASE}/api/currentprice/${symbol}/`,
 
   // News
-  GOOGLE_NEWS: (symbol) =>
-    `${API_BASE}/api/news/google/?symbol=${encodeURIComponent(symbol)}`,
+  STOCK_NEWS: (symbol) =>
+    `${API_BASE}/stock/news/${encodeURIComponent(symbol)}/`,
+  GENERAL_NEWS: (query) =>
+    `${API_BASE}/stock/news/search/?q=${encodeURIComponent(query)}`,
 
   // Market Sentiment
   SENTIMENT_HISTORY: (index, days) =>

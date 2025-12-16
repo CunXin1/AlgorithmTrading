@@ -130,6 +130,7 @@ export function WatchlistProvider({ children }) {
 /* ------------------------------
    Hook
    ------------------------------ */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWatchlist() {
   const ctx = useContext(WatchlistContext);
   if (!ctx) {

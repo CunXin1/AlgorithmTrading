@@ -1,7 +1,14 @@
+// ------------------------------------------------------------
+// RegisterPage.jsx
+// ------------------------------------------------------------
+// Registration page using authService for API calls
+// ------------------------------------------------------------
+
 import { useEffect, useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { ensureCSRF, sendCode, register } from "../api/authService";
 import "../styles/registerpage.css";
-import { ENDPOINTS } from "../api/config";
-import { getCSRFToken } from "../utils/csrf";
 
 const DEFAULT_AVATAR = "/assets/defaultprofile.png";
 
@@ -18,14 +25,23 @@ export default function RegisterPage() {
   const fileInputRef = useRef(null);
 
   const [sending, setSending] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [error, setError] = useState("");
 
-  /* -----------------------------
-     Fetch CSRF token on mount
-     ----------------------------- */
+  const { refreshUser, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if already logged in
   useEffect(() => {
-    fetch(ENDPOINTS.CSRF, { credentials: "include" }).catch(() => {});
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Fetch CSRF token on mount
+  useEffect(() => {
+    ensureCSRF().catch(() => {});
   }, []);
 
   /* -----------------------------
@@ -111,23 +127,10 @@ export default function RegisterPage() {
 
     setSending(true);
     try {
-      const csrfToken = getCSRFToken();
-      const res = await fetch(ENDPOINTS.AUTH_SEND_CODE, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(csrfToken && { "X-CSRFToken": csrfToken }),
-        },
-        credentials: "include",
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send code");
-
+      await sendCode(email);
       setCountdown(60);
-    } catch (e) {
-      setError(e.message);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setSending(false);
     }
@@ -155,34 +158,26 @@ export default function RegisterPage() {
       return;
     }
 
+    setSubmitting(true);
     try {
-      const csrfToken = getCSRFToken();
-      const res = await fetch(ENDPOINTS.AUTH_REGISTER, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(csrfToken && { "X-CSRFToken": csrfToken }),
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email,
-          username,
-          first_name: firstName,
-          last_name: lastName,
-          password,
-          confirm_password: confirm,
-          code,
-          avatar: avatarBase64,
-        }),
+      await register({
+        email,
+        username,
+        firstName,
+        lastName,
+        password,
+        confirmPassword: confirm,
+        code,
+        avatar: avatarBase64,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Register failed");
-
-      // ✅ 注册成功 → Dashboard
-      window.location.href = "/dashboard";
-    } catch (e) {
-      setError(e.message);
+      // Refresh user state after successful registration
+      await refreshUser();
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -217,12 +212,14 @@ export default function RegisterPage() {
             placeholder="First Name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
+            disabled={submitting}
           />
           <input
             className="auth-input"
             placeholder="Last Name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
+            disabled={submitting}
           />
         </div>
 
@@ -232,6 +229,7 @@ export default function RegisterPage() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={submitting}
         />
 
         <input
@@ -239,6 +237,7 @@ export default function RegisterPage() {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          disabled={submitting}
         />
 
         <input
@@ -247,6 +246,7 @@ export default function RegisterPage() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={submitting}
         />
 
         <input
@@ -255,6 +255,7 @@ export default function RegisterPage() {
           type="password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
+          disabled={submitting}
         />
 
         <div className="code-row">
@@ -263,12 +264,13 @@ export default function RegisterPage() {
             placeholder="Verification Code"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            disabled={submitting}
           />
           <button
             type="button"
             className="code-btn"
             onClick={handleSendCode}
-            disabled={sending || countdown > 0}
+            disabled={sending || countdown > 0 || submitting}
           >
             {countdown > 0 ? `${countdown}s` : "Send Code"}
           </button>
@@ -276,16 +278,13 @@ export default function RegisterPage() {
 
         {error && <div className="auth-error">{error}</div>}
 
-        <button className="auth-primary" type="submit">
-          Create Account
+        <button className="auth-primary" type="submit" disabled={submitting}>
+          {submitting ? "Creating..." : "Create Account"}
         </button>
 
-        <div
-          className="auth-link"
-          onClick={() => (window.location.href = "/login")}
-        >
+        <Link to="/login" className="auth-link">
           Already have an account?
-        </div>
+        </Link>
       </form>
     </div>
   );

@@ -1,3 +1,3 @@
 # Stock views
 from .watchlist import WatchlistView
-from .news import StockNewsView, StockNewsRefreshView
+from .news import StockNewsView, StockNewsRefreshView, GeneralNewsView

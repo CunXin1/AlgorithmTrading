@@ -28,7 +28,7 @@ export default function StockPage() {
   const [input, setInput] = useState("");
 
   // ✅ 全站唯一 watchlist 来源（Context）
-  const { watchlist, add, remove } = useWatchlist();
+  const { add } = useWatchlist();
 
   /* ------------------------------
      Sync URL → state

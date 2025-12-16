@@ -1,74 +1,41 @@
 // ------------------------------------------------------------
 // Navbar.jsx
 // ------------------------------------------------------------
+// Top navigation bar with authentication state from AuthContext
+// ------------------------------------------------------------
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/layout.css";
 
 export default function Navbar() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   /* ------------------------------
-     Check login status
+     Handle Dashboard click
      ------------------------------ */
-  useEffect(() => {
-    fetch("/api/auth/me/", {
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Not logged in");
-        return res.json();
-      })
-      .then((data) => {
-        setUser(data);
-      })
-      .catch(() => {
-        setUser(null);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
-
-  /* ------------------------------
-     Handle My Dashboard click
-     ------------------------------ */
-  async function handleDashboardClick(e) {
+  function handleDashboardClick(e) {
     e.preventDefault();
-
-    try {
-      const res = await fetch("/api/auth/me/", {
-        credentials: "include",
-      });
-
-      if (!res.ok) {
-        // ❌ 未登录 → Login
-        window.location.href = "/login";
-        return;
-      }
-
-      const me = await res.json();
-      window.location.href = "/dashboard";
-    } catch {
-      window.location.href = "/login";
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      navigate("/login");
     }
   }
 
   /* ------------------------------
-     Logout
+     Handle Logout
      ------------------------------ */
   async function handleLogout() {
-    await fetch("/api/auth/logout/", {
-      method: "POST",
-      credentials: "include",
-    });
-    window.location.href = "/";
+    await logout();
+    navigate("/");
   }
 
   return (
     <header className="navbar">
-      {/* 左侧 */}
+      {/* Left */}
       <div className="navbar-left">
         <img
           src={encodeURI("/assets/logo.png")}
@@ -78,13 +45,13 @@ export default function Navbar() {
         <h2 className="logo">AlgorithmTrading</h2>
       </div>
 
-      {/* 中间 */}
+      {/* Center */}
       <nav className="navbar-center">
         <ul className="nav-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/news">News</a></li>
-          <li><a href="/marketsentiment">Market Sentiment</a></li>
-          <li><a href="/portfolio">Portfolio</a></li>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/news">News</Link></li>
+          <li><Link to="/marketsentiment">Market Sentiment</Link></li>
+          <li><Link to="/portfolio">Portfolio</Link></li>
           <li>
             <a href="#" onClick={handleDashboardClick}>
               Dashboard
@@ -93,17 +60,17 @@ export default function Navbar() {
         </ul>
       </nav>
 
-      {/* 右侧 */}
+      {/* Right */}
       <div className="navbar-right">
         {!loading && (
-          user ? (
+          isAuthenticated ? (
             <button className="login-btn" onClick={handleLogout}>
               Logout
             </button>
           ) : (
-            <a href="/login" className="login-btn">
+            <Link to="/login" className="login-btn">
               Login
-            </a>
+            </Link>
           )
         )}
       </div>

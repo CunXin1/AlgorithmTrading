@@ -1,46 +1,48 @@
+// ------------------------------------------------------------
+// LoginPage.jsx
+// ------------------------------------------------------------
+// Login page using AuthContext for authentication
+// ------------------------------------------------------------
+
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { ensureCSRF } from "../api/authService";
 import "../styles/registerpage.css";
-import { ENDPOINTS } from "../api/config";
-import { getCSRFToken } from "../utils/csrf";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  /* Fetch CSRF token on mount */
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if already logged in
   useEffect(() => {
-    fetch(ENDPOINTS.CSRF, { credentials: "include" }).catch(() => {});
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Fetch CSRF token on mount
+  useEffect(() => {
+    ensureCSRF().catch(() => {});
   }, []);
 
   async function handleLogin(e) {
     e.preventDefault();
     setError("");
+    setSubmitting(true);
 
     try {
-      const csrfToken = getCSRFToken();
-      const res = await fetch(ENDPOINTS.AUTH_LOGIN, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(csrfToken && { "X-CSRFToken": csrfToken }),
-        },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Login failed");
-
-      const resMe = await fetch(ENDPOINTS.AUTH_ME, {
-        credentials: "include",
-      });
-      const me = await resMe.json();
-
-      window.location.href = "/dashboard";
-
-    } catch (e) {
-      setError(e.message);
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -56,6 +58,7 @@ export default function LoginPage() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={submitting}
         />
 
         <input
@@ -64,20 +67,18 @@ export default function LoginPage() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={submitting}
         />
 
         {error && <div className="auth-error">{error}</div>}
 
-        <button className="auth-primary" type="submit">
-          Login
+        <button className="auth-primary" type="submit" disabled={submitting}>
+          {submitting ? "Logging in..." : "Login"}
         </button>
 
-        <div
-          className="auth-link"
-          onClick={() => (window.location.href = "/register")}
-        >
+        <Link to="/register" className="auth-link">
           Create an account
-        </div>
+        </Link>
       </form>
     </div>
   );

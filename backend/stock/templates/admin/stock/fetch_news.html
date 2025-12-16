@@ -5,23 +5,35 @@
 <div id="content-main">
     <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
         <h3>Fetch Stock News</h3>
-        <p>Fetch news from Google News RSS feed for stocks.</p>
+        <p>Fetch news from Google News RSS feed for stocks or general queries.</p>
     </div>
     
-    <form method="post" enctype="multipart/form-data">
+    <form method="post">
         {% csrf_token %}
         
         <fieldset class="module aligned">
-            <h2>Fetch for Specific Stock</h2>
-            <div class="form-row">
-                <label for="symbol">Stock Symbol:</label>
-                <select name="symbol" id="symbol" style="padding: 8px; min-width: 200px;">
-                    <option value="">-- All Stocks --</option>
-                    {% for stock in stocks %}
-                    <option value="{{ stock.stock_symbol }}">{{ stock.stock_symbol }} - {{ stock.stock_name }}</option>
+            <h2>News Query</h2>
+            
+            {% for field in form %}
+            <div class="form-row" style="margin-bottom: 15px;">
+                <div>
+                    {{ field.label_tag }}
+                </div>
+                <div style="margin-top: 5px;">
+                    {{ field }}
+                    {% if field.help_text %}
+                    <p class="help" style="color: #666; font-size: 12px; margin-top: 3px;">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+                {% if field.errors %}
+                <ul class="errorlist">
+                    {% for error in field.errors %}
+                    <li>{{ error }}</li>
                     {% endfor %}
-                </select>
+                </ul>
+                {% endif %}
             </div>
+            {% endfor %}
         </fieldset>
         
         <div class="submit-row" style="margin-top: 20px;">
@@ -31,13 +43,26 @@
     </form>
     
     <div style="margin-top: 30px; padding: 15px; background-color: #fff3cd; border-radius: 5px;">
-        <h4>Note</h4>
+        <h4>Usage</h4>
         <ul>
-            <li>Select a specific stock to fetch news for that stock only.</li>
-            <li>Leave empty to fetch news for all stocks in database.</li>
-            <li>Only the top 15 news items are saved per stock.</li>
+            <li><strong>Stock Symbol:</strong> Enter a symbol like "AAPL" or "TSLA" and check "Is Stock Symbol"</li>
+            <li><strong>General Query:</strong> Enter a search query like "Federal Reserve" and uncheck "Is Stock Symbol"</li>
+            <li>Only the top 15 news items are saved per query.</li>
             <li>Existing news items are updated if the link already exists.</li>
         </ul>
     </div>
 </div>
+
+<style>
+    #content-main input[type="text"] {
+        padding: 8px;
+        min-width: 300px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    #content-main input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+</style>
 {% endblock %}
