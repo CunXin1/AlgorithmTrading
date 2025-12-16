@@ -41,3 +41,7 @@ dist/
 
 #django
 media/
+backend/media/
+backend/*.sqlite3
+backend/**/__pycache__/
+
