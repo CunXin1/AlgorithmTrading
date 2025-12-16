@@ -1,13 +1,16 @@
 # core/urls.py
-from django.urls import path
-from . import views
-from .views import profile_api, portfolio_list_api, portfolio_detail_api
+"""
+URL configuration for AlgorithmTrading project.
+Each app defines its own full API path.
+"""
+from django.contrib import admin
+from django.urls import path, include
 
 urlpatterns = [
-    path("profile/", views.profile_api),
-    path("watchlist/", views.watchlist_api),
-    path("profile/", profile_api),
-    path("email-subscription/", views.email_subscription_api),
-    path("portfolios/", portfolio_list_api),
-    path("portfolios/<int:portfolio_id>/", portfolio_detail_api),
+    path("admin/", admin.site.urls),
+    path("", include("webauthn.urls")),
+    path("", include("stock.urls")),
+    # path("", include("finance.urls")),
+    # path("", include("news.urls")),
+    # path("", include("market_sentiment.urls")),
 ]

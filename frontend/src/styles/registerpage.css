@@ -25,6 +25,52 @@
     margin-bottom: 18px;
 }
 
+/* Avatar upload */
+.avatar-upload {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.avatar-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #e5e7eb;
+    transition: border-color 0.2s;
+}
+
+.avatar-upload:hover .avatar-preview {
+    border-color: #1a73e8;
+}
+
+.avatar-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.avatar-upload:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-overlay span {
+    font-size: 16px;
+}
+
 .auth-input {
     width: 100%;
     padding: 16px 14px;
@@ -33,6 +79,20 @@
     border: 1px solid #d1d5db;
     background: #f9fafb;
     font-size: 14px;
+    color: #333;
+}
+
+.auth-input::placeholder {
+    color: #9ca3af;
+}
+
+.name-row {
+    display: flex;
+    gap: 8px;
+}
+
+.name-row .auth-input {
+    flex: 1;
 }
 
 .code-row {

@@ -3,7 +3,7 @@
 // ------------------------------------------------------------
 
 import { useNavigate } from "react-router-dom";
-import InvestorDonutChart from "../components/InvestorDonutChart";
+import InvestorDonutChart from "../components/charts/InvestorDonutChart";
 import "../styles/portfolio.css";
 
 export default function PortfolioPage() {

@@ -10,12 +10,12 @@
 // - Footer with contact and copyright
 // ------------------------------------------------------------
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TradingViewChart from "../components/TradingviewChart.jsx";
-import RightSidebar from "../components/RightSidebar.jsx";
+import TradingViewChart from "../components/charts/TradingviewChart.jsx";
+import RightSidebar from "../components/common/RightSidebar.jsx";
 import "../styles/layout.css";
-import NewsPanel from "../components/NewsPanel.jsx";
+import NewsPanel from "../components/news/NewsPanel.jsx";
 import { useWatchlist } from "../context/WatchlistContext";
 
 const TRENDING = ["NVDA", "AVGO", "PLTR", "META", "AMD", "TSLA", "AMZN"];
@@ -28,12 +28,7 @@ export default function HomePage() {
   const [input, setInput] = useState("");
 
   // ✅ 全站唯一 watchlist 来源（Context）
-  const { watchlist, add, remove } = useWatchlist();
-
-  const normalizedTrending = useMemo(
-    () => Array.from(new Set(TRENDING.map((s) => s.toUpperCase()))),
-    []
-  );
+  const { add } = useWatchlist();
 
   // 搜索股票：更新图表 + 跳转 stock 页面（不清空输入）
   const handleSearch = (e) => {
@@ -43,14 +38,6 @@ export default function HomePage() {
 
     setSymbol(formatted);
     navigate(`/stock/${formatted.toLowerCase()}`);
-  };
-
-  // 推荐股票按钮点击：跳转 stock 页面
-  const handleSelect = (sym) => {
-    const s = String(sym).trim().toUpperCase();
-    if (!s) return;
-    setSymbol(s);
-    navigate(`/stock/${s.toLowerCase()}`);
   };
 
   return (

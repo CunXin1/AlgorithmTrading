@@ -1,35 +1,48 @@
-import { useState } from "react";
+// ------------------------------------------------------------
+// LoginPage.jsx
+// ------------------------------------------------------------
+// Login page using AuthContext for authentication
+// ------------------------------------------------------------
+
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { ensureCSRF } from "../api/authService";
 import "../styles/registerpage.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Fetch CSRF token on mount
+  useEffect(() => {
+    ensureCSRF().catch(() => {});
+  }, []);
 
   async function handleLogin(e) {
     e.preventDefault();
     setError("");
+    setSubmitting(true);
 
     try {
-      const res = await fetch("/api/auth/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Login failed");
-
-      const resMe = await fetch("/api/auth/me/", {
-        credentials: "include",
-      });
-      const me = await resMe.json();
-
-      window.location.href = `/dashboard/${me.username}`;
-
-    } catch (e) {
-      setError(e.message);
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -45,6 +58,7 @@ export default function LoginPage() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={submitting}
         />
 
         <input
@@ -53,20 +67,18 @@ export default function LoginPage() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={submitting}
         />
 
         {error && <div className="auth-error">{error}</div>}
 
-        <button className="auth-primary" type="submit">
-          Login
+        <button className="auth-primary" type="submit" disabled={submitting}>
+          {submitting ? "Logging in..." : "Login"}
         </button>
 
-        <div
-          className="auth-link"
-          onClick={() => (window.location.href = "/register")}
-        >
+        <Link to="/register" className="auth-link">
           Create an account
-        </div>
+        </Link>
       </form>
     </div>
   );

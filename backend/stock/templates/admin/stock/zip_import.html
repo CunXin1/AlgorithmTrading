@@ -1,0 +1,63 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block content %}
+<div id="content-main">
+    <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+        <h3>ZIP File Format</h3>
+        <p>Upload a ZIP file containing:</p>
+        <ul>
+            <li><strong>stocks.csv</strong> - CSV file with stock data</li>
+            <li><strong>Image files</strong> - Named by stock symbol (e.g., AAPL.png, GOOGL.jpg)</li>
+        </ul>
+        
+        <h4>CSV Format:</h4>
+        <pre style="background-color: #e9ecef; padding: 10px; border-radius: 3px;">symbol,name
+AAPL,Apple Inc.
+GOOGL,Alphabet Inc.
+MSFT,Microsoft Corporation
+TSLA,Tesla Inc.
+NVDA,NVIDIA Corporation</pre>
+
+        <h4>ZIP Structure Example:</h4>
+        <pre style="background-color: #e9ecef; padding: 10px; border-radius: 3px;">stocks.zip
+├── stocks.csv
+├── AAPL.png
+├── GOOGL.png
+├── MSFT.png
+├── TSLA.png
+└── NVDA.png</pre>
+        
+        <p style="margin-top: 10px; color: #666;">
+            <strong>Notes:</strong>
+            <ul>
+                <li>Image files should be named exactly as the stock symbol (case-insensitive)</li>
+                <li>Supported image formats: PNG, JPG, JPEG, GIF, WEBP</li>
+                <li>Recommended image size: 128x128 pixels</li>
+                <li>If a stock already exists, it will be updated</li>
+                <li>Stocks without matching image files will be imported without images</li>
+            </ul>
+        </p>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <div>
+                    {{ form.zip_file.label_tag }}
+                    {{ form.zip_file }}
+                    {% if form.zip_file.help_text %}
+                        <p class="help">{{ form.zip_file.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </fieldset>
+        
+        <div class="submit-row">
+            <input type="submit" value="Import" class="default" />
+            <a href="{% url 'admin:stock_stock_changelist' %}" class="button cancel-link">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

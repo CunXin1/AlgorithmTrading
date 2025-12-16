@@ -28,29 +28,25 @@ export default function EmailSubCard({
       Receive email alerts for Fear &amp; Greed Index
     </div>
 
-    {/* ===== Add email ===== */}
-    <div className="watchlist-add">
-      <input
-        className="dash-input"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="name@example.com"
-        disabled={subs.length >= MAX_EMAILS}
-      />
-      <button
-        className="dash-btn primary"
-        type="button"
-        onClick={handleAdd}
-        disabled={subs.length >= MAX_EMAILS}
-        title={
-          subs.length >= MAX_EMAILS
-            ? "Maximum 3 emails"
-            : "Add email"
-        }
-      >
-        Add
-      </button>
-    </div>
+    {/* ===== Add email (hidden when max reached) ===== */}
+    {subs.length < MAX_EMAILS && (
+      <div className="watchlist-add">
+        <input
+          className="dash-input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="name@example.com"
+        />
+        <button
+          className="dash-btn primary"
+          type="button"
+          onClick={handleAdd}
+          title="Add email"
+        >
+          Add
+        </button>
+      </div>
+    )}
 
     {/* ===== Scrollable list (IMPORTANT PART) ===== */}
     {subs.length === 0 ? (

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ENDPOINTS } from "../../api/config";
 
 /* =========================
    Utils: forward-fill prices
@@ -24,11 +25,10 @@ function normalizePrices(raw) {
    Minute Chart with Axes + Hover
    ========================= */
 function MinuteChart({ data }) {
-    if (!Array.isArray(data) || data.length < 2) return null;
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-
     const [hoverIdx, setHoverIdx] = useState(null);
+
+    if (!Array.isArray(data) || data.length < 2) return null;
 
     const width = 420;
     const height = 150;
@@ -112,9 +112,6 @@ function MinuteChart({ data }) {
         { label: "14:00", idx: Math.floor(closes.length * 0.7) },
         { label: "16:00", idx: closes.length - 1 },
     ];
-
-    const hoverTime =
-        hoverIdx !== null ? data[hoverIdx].time.slice(11, 16) : null;
 
     return (
         <div
@@ -278,7 +275,7 @@ function MarketCard({ symbol, name }) {
 
     useEffect(() => {
         let cancelled = false;
-        fetch(`/api/stocks/${symbol.toLowerCase()}/`)
+        fetch(ENDPOINTS.STOCKS(symbol.toLowerCase()))
             .then(r => r.json())
             .then(j => !cancelled && setData(j.data || []))
             .finally(() => !cancelled && setLoading(false));
