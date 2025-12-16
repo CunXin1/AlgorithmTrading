@@ -4,7 +4,6 @@
 // ------------------------------------------------------------
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import TradingViewChart from "../components/TradingViewChart";
 import WatchlistCard from "../components/dashboard/WatchlistCard";
 import "../styles/myportfolio.css";
 import { useRef } from "react";
