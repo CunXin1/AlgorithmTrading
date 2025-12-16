@@ -6,11 +6,11 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
-from market_sentiment.services.alert_logic import classify, handle_alert
+from market_sentiment.alert_logic import classify, handle_alert
 import os
 from django.db import IntegrityError
 
-from market_sentiment.services.fetcher import fetch_daily_latest
+from market_sentiment.fetcher import fetch_daily_latest
 
 
 

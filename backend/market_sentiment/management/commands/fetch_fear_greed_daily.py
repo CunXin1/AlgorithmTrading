@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
-from market_sentiment.services.fetcher import fetch_daily_latest
+from market_sentiment.fetcher import fetch_daily_latest
 from market_sentiment.models import AlertSubscription, MarketSentiment
-from market_sentiment.services.alert_logic import classify, handle_alert
+from market_sentiment.alert_logic import classify, handle_alert
 
 
 class Command(BaseCommand):

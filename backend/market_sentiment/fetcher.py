@@ -1,7 +1,7 @@
 import http.client
 import json
 from market_sentiment.models import MarketSentiment
-from market_sentiment.services.normalizer import normalize_item
+from market_sentiment.normalizer import normalize_item
 
 RAPIDAPI_HOST = "cnn-fear-and-greed-index.p.rapidapi.com"
 
