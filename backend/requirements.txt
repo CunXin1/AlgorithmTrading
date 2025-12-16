@@ -39,3 +39,8 @@ yfinance==0.2.40
 # Environment variable management
 # -----------------------------
 python-dotenv==1.0.1
+
+# -----------------------------
+# Image Processing (for user profile pics)
+# -----------------------------
+Pillow

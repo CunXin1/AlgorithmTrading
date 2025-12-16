@@ -41,7 +41,7 @@ class EmailSubscription(models.Model):
 
     last_state = models.CharField(max_length=32, default="NORMAL")
     last_panic_sent_at = models.DateTimeField(blank=True, null=True)
-    
+
     class Meta:
         unique_together = ("user", "email")   # ✅ 防止重复订阅
         indexes = [
@@ -63,3 +63,48 @@ class Portfolio(models.Model):
 
     def __str__(self):
         return self.name
+
+
+def default_portfolio1():
+    return {
+        "name": "Portfolio 1",
+        "holdings": [
+            {"symbol": "AAPL", "shares": 1, "buy_price": None},
+            {"symbol": "GOOGL", "shares": 1, "buy_price": None},
+            {"symbol": "NVDA", "shares": 1, "buy_price": None},
+        ],
+    }
+
+
+def default_portfolio2():
+    return {
+        "name": "Portfolio 2",
+        "holdings": [
+            {"symbol": "TSLA", "shares": 1, "buy_price": None},
+            {"symbol": "PLTR", "shares": 1, "buy_price": None},
+            {"symbol": "AMD", "shares": 1, "buy_price": None},
+        ],
+    }
+
+
+class Portfolio(models.Model):
+    """
+    User-created portfolio (max 2 per user).
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    
+    portfolio1 = models.JSONField(default=default_portfolio1, blank=True)
+    portfolio2 = models.JSONField(default=default_portfolio2, blank=True)
+
+
+    # ✅ 真正的资产数据
+    holdings = models.JSONField(default=list)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "name")
+
+    def __str__(self):
+        return f"{self.user} - {self.name}"

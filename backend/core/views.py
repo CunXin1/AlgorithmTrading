@@ -1,5 +1,6 @@
 # core/views.py
 import json
+import profile
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
@@ -13,7 +14,7 @@ from market_sentiment.services.fetcher import fetch_daily_latest
 
 
 
-from .models import UserProfile, Watchlist, EmailSubscription
+from .models import UserProfile, Watchlist, EmailSubscription, Portfolio
 
 
 @login_required
@@ -270,3 +271,109 @@ def run_market_sentiment_alerts(request):
         "state": state,
         "emails_sent": sent,
     })
+
+
+@login_required
+@require_http_methods(["GET", "POST", "PATCH"])
+def portfolio_list_api(request):
+    """
+    GET  -> list portfolios (max 2)
+    POST -> create portfolio (if < 2)
+    """
+    user = request.user
+    
+    if request.method == "GET":
+        return JsonResponse({
+            "username": request.user.username,
+            "display_name": profile.display_name or request.user.username,
+            "avatar": profile.avatar.url if profile.avatar else None,
+            "portfolio1": profile.portfolio1,
+            "portfolio2": profile.portfolio2,
+        })
+
+
+    if request.method == "PATCH":
+        try:
+            body = json.loads(request.body or "{}")
+        except Exception:
+            return JsonResponse({"error": "invalid json"}, status=400)
+
+        if "portfolio1" in body:
+            profile.portfolio1 = body["portfolio1"]
+
+        if "portfolio2" in body:
+            profile.portfolio2 = body["portfolio2"]
+
+        profile.save(update_fields=["portfolio1", "portfolio2"])
+
+        return JsonResponse({
+            "ok": True,
+            "portfolio1": profile.portfolio1,
+            "portfolio2": profile.portfolio2,
+        })
+        profile.portfolio1 = body["portfolio1"]
+
+    if "portfolio2" in body:
+        profile.portfolio2 = body["portfolio2"]
+
+    profile.save(update_fields=["portfolio1", "portfolio2"])
+
+    return JsonResponse({
+        "ok": True,
+        "portfolio1": profile.portfolio1,
+        "portfolio2": profile.portfolio2,
+    })
+
+    # POST
+    if Portfolio.objects.filter(user=user).count() >= 2:
+        return JsonResponse(
+            {"error": "Maximum 2 portfolios allowed"},
+            status=400,
+        )
+
+    body = json.loads(request.body or "{}")
+    name = body.get("name", "").strip() or "New Portfolio"
+
+    p = Portfolio.objects.create(
+        user=user,
+        name=name,
+        holdings=[],
+    )
+
+    return JsonResponse(
+        {
+            "id": p.id,
+            "name": p.name,
+            "holdings": p.holdings,
+        },
+        status=201,
+    )
+
+@login_required
+@require_http_methods(["PATCH"])
+def portfolio_detail_api(request, portfolio_id):
+    user = request.user
+
+    try:
+        p = Portfolio.objects.get(id=portfolio_id, user=user)
+    except Portfolio.DoesNotExist:
+        return JsonResponse({"error": "not found"}, status=404)
+
+    body = json.loads(request.body or "{}")
+
+    if "name" in body:
+        p.name = body["name"][:100]
+
+    if "holdings" in body:
+        if not isinstance(body["holdings"], list):
+            return JsonResponse({"error": "holdings must be list"}, status=400)
+        p.holdings = body["holdings"]
+
+    p.save()
+    return JsonResponse(
+        {
+            "id": p.id,
+            "name": p.name,
+            "holdings": p.holdings,
+        }
+    )
