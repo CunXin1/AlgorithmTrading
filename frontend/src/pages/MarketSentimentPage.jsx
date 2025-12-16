@@ -49,14 +49,6 @@ const LABELS = {
 
 const MAX_EMAILS = 3;
 
-function normalizeEmail(e) {
-    return String(e || "").trim().toLowerCase();
-}
-
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
 async function fetchJSON(url) {
     const res = await fetch(url);
     if (!res.ok) {
