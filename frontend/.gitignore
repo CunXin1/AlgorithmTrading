@@ -38,3 +38,6 @@ venv/
 # Node
 node_modules/
 dist/
+
+#django
+media/

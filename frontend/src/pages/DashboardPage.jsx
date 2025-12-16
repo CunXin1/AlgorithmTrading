@@ -4,10 +4,11 @@ import { useParams } from "react-router-dom";
 import "../styles/dashboard.css";
 import ProfileCard from "../components/dashboard/ProfileCard.jsx";
 import WatchlistCard from "../components/dashboard/WatchlistCard.jsx";
-import EmailSubscriptionsCard from "../components/dashboard/EmailSubscriptionsCard.jsx";
+import EmailCard from "../components/dashboard/EmailSubscriptionsCard.jsx";
 import PortfoliosCard from "../components/dashboard/PortfoliosCard.jsx";
 import MarketCardsRow from "../components/dashboard/MarketCardsRow.jsx";
 import MyNewsBlock from "../components/dashboard/MyNewsBlock.jsx";
+import useEmailSubscriptions from "../utils/emailsubscriptions.js";
 
 export default function DashboardPage() {
   const { username } = useParams();
@@ -35,7 +36,17 @@ export default function DashboardPage() {
       });
   }, [username]);
 
+  const {
+    subs,
+    emailInput,
+    setEmailInput,
+    handleAddEmail,
+    toggleEmail,
+    removeEmail,
+    MAX_EMAILS,
+  } = useEmailSubscriptions();
   if (checking) return null;
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-container">
@@ -46,14 +57,23 @@ export default function DashboardPage() {
           {/* 第一行：Profile + Watchlist */}
           <div className="dashboard-top-row">
             <ProfileCard />
-            <div className ="watchlist">
-            <WatchlistCard />
+            <div className="watchlist">
+              <WatchlistCard />
             </div>
           </div>
 
           {/* 第二行：Email + Portfolio */}
           <div className="dashboard-second-row">
-            <EmailSubscriptionsCard />
+            <EmailCard
+              subs={subs}
+              input={emailInput}
+              setInput={setEmailInput}
+              handleAdd={handleAddEmail}
+              toggle={toggleEmail}
+              remove={removeEmail}
+              MAX_EMAILS={MAX_EMAILS}
+            />
+
             <PortfoliosCard />
           </div>
 
@@ -70,7 +90,7 @@ export default function DashboardPage() {
         </div>
 
       </div>
-    
+
     </div>
   );
 }

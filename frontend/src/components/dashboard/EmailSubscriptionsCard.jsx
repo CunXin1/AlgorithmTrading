@@ -1,17 +1,18 @@
 import React from "react";
 
 export default function EmailSubCard({
-  subs = [],          // 👈 关键
-  input = "",
-  setInput = () => {},
-  handleAdd = () => {},
-  toggle = () => {},
-  remove = () => {},
-  MAX_EMAILS = 3,
+  subs,
+  input,
+  setInput,
+  handleAdd,
+  toggle,
+  remove,
+  MAX_EMAILS,
 }) {
-
-
-
+  // ✅ fail fast：父组件没传就直接炸
+  if (!Array.isArray(subs)) {
+    throw new Error("Email: `subs` must be an array");
+  }
   return (
   <div className="dash-card">
     {/* ===== Header ===== */}
