@@ -85,6 +85,20 @@ def logout_view(request):
     return Response({"ok": True})
 
 
+def _send_email_async(subject, message, recipient):
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient],
+            fail_silently=False,
+        )
+    except Exception as e:
+        # 生产环境不要 print，可以换成 logging
+        print("[EMAIL ERROR]", e)
+        
+        
 @api_view(["POST"])
 def send_verification_code(request):
     email = request.data.get("email")
@@ -92,7 +106,6 @@ def send_verification_code(request):
     if not email:
         return Response({"error": "Email is required"}, status=400)
 
-    # 生成 6 位数字验证码
     code = get_random_string(length=6, allowed_chars="0123456789")
 
     EmailVerificationCode.objects.create(
@@ -100,15 +113,18 @@ def send_verification_code(request):
         code=code,
     )
 
-    # 用 settings.DEFAULT_FROM_EMAIL 更稳（你配置好了 Gmail 以后这里就会正确发件）
-    send_mail(
-        subject="Your AlgorithmTrading verification code",
-        message=f"Your verification code is: {code}",
-        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
-        recipient_list=[email],
-        fail_silently=False,
-    )
+    # ✅ 异步发邮件（关键）
+    Thread(
+        target=_send_email_async,
+        args=(
+            "Your AlgorithmTrading verification code",
+            f"Your verification code is: {code}",
+            email,
+        ),
+        daemon=True,
+    ).start()
 
+    # ✅ 立刻返回，不阻塞 worker
     return Response({"ok": True})
 
 
