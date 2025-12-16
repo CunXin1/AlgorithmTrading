@@ -46,4 +46,6 @@ backend/media/avatars/*.png
 
 backend/*.sqlite3
 backend/**/__pycache__/
+**/media/
+**/*.sqlite3
 
