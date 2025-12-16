@@ -24,7 +24,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # SECURITY
 # -------------------------------------------------------------
 SECRET_KEY = "django-insecure-1)1y9tt0*md)m1o*9)zy29vj-rb-c#!kaah!l3dil!=7xgb7=("
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ["*"]   # 开发环境允许所有主机访问
 
 # -------------------------------------------------------------
