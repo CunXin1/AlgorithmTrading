@@ -41,7 +41,9 @@ dist/
 
 #django
 media/
-backend/media/
+backend/media/avatars/*.jpg
+backend/media/avatars/*.png
+
 backend/*.sqlite3
 backend/**/__pycache__/
 
