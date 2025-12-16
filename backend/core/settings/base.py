@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     "webauthn",
     "portfolio",
     "stock",
-    "news",
     # "market_sentiment",
 ]
 
