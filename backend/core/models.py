@@ -29,7 +29,6 @@ class Watchlist(models.Model):
     def __str__(self):
         return f"Watchlist({self.user})"
 
-
 class EmailSubscription(models.Model):
     """
     Market sentiment email subscription.
@@ -40,8 +39,18 @@ class EmailSubscription(models.Model):
     enabled = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    last_state = models.CharField(max_length=32, default="NORMAL")
+    last_panic_sent_at = models.DateTimeField(blank=True, null=True)
+    
+    class Meta:
+        unique_together = ("user", "email")   # ✅ 防止重复订阅
+        indexes = [
+            models.Index(fields=["enabled"]), # ✅ 后面发邮件会用
+        ]
+
     def __str__(self):
         return f"{self.email} ({'on' if self.enabled else 'off'})"
+
 
 
 class Portfolio(models.Model):
