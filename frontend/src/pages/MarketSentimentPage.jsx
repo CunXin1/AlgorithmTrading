@@ -6,6 +6,8 @@ import { normalizeRating, getSentimentClass, formatScore } from "../utils/sentim
 import useEmailSubscriptions from "../utils/emailsubscriptions.js";
 
 
+
+
 function getCSRFToken() {
     const name = "csrftoken=";
     const cookies = document.cookie.split(";");
@@ -58,7 +60,6 @@ async function fetchJSON(url) {
     return await res.json();
 }
 
-
 export default function MarketSentimentPage() {
     const [rangeDays, setRangeDays] = useState(365);
     const [fgSeries, setFgSeries] = useState([]);
@@ -76,9 +77,6 @@ export default function MarketSentimentPage() {
     } = useEmailSubscriptions();
 
     console.log("subs from hook =", subs);
-
-
-
 
 
     // Fetch F&G
